@@ -1,13 +1,15 @@
 package AppSwing;
 
-public class Cliente {
+
+
+public class ClienteBanco {
 
     private String dni;
     private String nombre;
     private String apellido;
     private String password;
 
-    public Cliente(String dni, String nombre, String apellido, String password) {
+    public ClienteBanco(String dni, String nombre, String apellido, String password) {
         this.dni = dni;
         this.nombre = nombre;
         this.apellido = apellido;

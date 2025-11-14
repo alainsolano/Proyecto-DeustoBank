@@ -1,15 +1,13 @@
 package AppSwing;
 
-
-
-public class Cuenta {
+public class CuentaCorriente {
 
     private int numCuenta;
     private double saldo;
     private String dni;        
     private int numSucursal;   
 
-    public Cuenta(int numCuenta, double saldo, String dni, int numSucursal) {
+    public CuentaCorriente(int numCuenta, double saldo, String dni, int numSucursal) {
         this.numCuenta = numCuenta;
         this.saldo = saldo;
         this.dni = dni;

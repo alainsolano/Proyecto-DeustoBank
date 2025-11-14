@@ -1,6 +1,6 @@
 package AppSwing;
 
-public class Trabajador {
+public class TrabajadorBanco {
     private String username;
     private String nombre;
     private String apellido;
@@ -8,7 +8,7 @@ public class Trabajador {
     private String role;
     private int numsucursal;
 
-    public Trabajador(String username, String nombre, String apellido, String password, String role, int numsucursal) {
+    public TrabajadorBanco(String username, String nombre, String apellido, String password, String role, int numsucursal) {
         this.username = username;
         this.nombre = nombre;
         this.apellido = apellido;
