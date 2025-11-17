@@ -80,7 +80,7 @@ public class LoginFrame extends JFrame {
         if ("CLIENTE".equals(user.getRole())) {
             new ClienteFrame(user);
         } else if ("TRABAJADOR".equals(user.getRole())) {
-            new TrabajadorFrame(user);
+            new TrabajadorFrame(user);//falta por crear
         }
     }
 

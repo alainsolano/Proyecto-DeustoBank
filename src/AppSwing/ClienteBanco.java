@@ -47,4 +47,17 @@ public class ClienteBanco {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    
+    //queda por definir
+	public int  getSaldo() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	//queda por definir
+	public String[] getHistorialTransferencias() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
