@@ -358,6 +358,7 @@ public class TrabajadorFrame extends JFrame {
             tableModel.addRow(row);
         }
         
+        
     }
 
 }
