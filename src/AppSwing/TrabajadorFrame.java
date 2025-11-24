@@ -318,8 +318,13 @@ public class TrabajadorFrame extends JFrame {
         panel.add(Box.createVerticalGlue()); // Empuja todo hacia arriba
 
         // Lógica (de momento con mensajes)
-        btnAdd.addActionListener(e ->
-                JOptionPane.showMessageDialog(this, "Funcionalidad 'Añadir' en desarrollo."));
+        btnAdd.addActionListener(e -> {
+            AñadirClienteFrame add = new AñadirClienteFrame(TrabajadorFrame.this);
+            add.setVisible(true);     // Mostrar la nueva ventana
+            TrabajadorFrame.this.setVisible(false); // Ocultar la ventana actual
+        });
+
+        		
 
         btnEdit.addActionListener(e -> {
             if (clientTable.getSelectedRow() == -1) {
