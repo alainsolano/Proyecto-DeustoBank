@@ -284,7 +284,10 @@ public class TrabajadorFrame extends JFrame {
         detailCuenta.setText("N/A");
         detailSaldo.setText("N/A");
     }
-
+    private void logout() {
+    	dispose();
+    	LoginFrame f = new LoginFrame();
+    }
     /**
      * Crea el panel de acciones (Añadir, Editar, Borrar).
      */
@@ -354,14 +357,8 @@ public class TrabajadorFrame extends JFrame {
         for (Object[] row : clientes) {
             tableModel.addRow(row);
         }
+        
     }
 
-    /**
-     * Cierra la sesión y vuelve al Login.
-     */
-    private void logout() {
-        dispose();
-        new LoginFrame();
-    }
 }
-S
+
