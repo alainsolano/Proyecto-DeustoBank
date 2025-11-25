@@ -183,6 +183,6 @@ public class AñadirClienteFrame extends JFrame {
 	            if (psCuenta != null) psCuenta.close();
 	            if (conn != null) conn.close();
 	        } catch (SQLException ignored) {}
-	    }
+	    }
 	}
 }
