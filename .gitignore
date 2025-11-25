@@ -29,5 +29,5 @@ bin/
 .DS_Store
 
 ### SQLite ###
-#banco.db
+banco.db
 #*.db
