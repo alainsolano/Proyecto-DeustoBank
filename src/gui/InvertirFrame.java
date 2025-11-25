@@ -29,6 +29,7 @@ public class InvertirFrame extends JFrame {
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
         contentPane.setLayout(new GridLayout(9, 1, 5, 5)); // espacio para el botón extra
+        setLocationRelativeTo(null);
         setContentPane(contentPane);
 
         String nombreCliente = cliente.getNombre();

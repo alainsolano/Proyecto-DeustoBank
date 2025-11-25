@@ -1,5 +1,8 @@
 package gui;
 
+import database.DatabaseManager;
+import objetos.User;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -14,6 +17,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.awt.event.ActionEvent;
 
+
 public class AñadirClienteFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -22,12 +26,19 @@ public class AñadirClienteFrame extends JFrame {
 	private JTextField txtNombre;
 	private JTextField txtApellido;
 	private JTextField txtContraseña;
-	private JTextField txtNumSucursal;
 
+
+    private final DatabaseManager dbManager = new DatabaseManager();
 	
 	public AñadirClienteFrame(TrabajadorFrame parent) {
+
+        String username = parent.getUser().getUsername();
+        String[] infoSucursal = dbManager.getInfoSucursalTrabajador(username);
+        String numSucursal = infoSucursal[2];
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
+        setLocationRelativeTo(null);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -80,17 +91,12 @@ public class AñadirClienteFrame extends JFrame {
 		contentPane.add(txtContraseña);
 		txtContraseña.setColumns(10);
 		
-		JLabel lblNewLabel_1 = new JLabel("NUMERO SUCURSAL:");
+		JLabel lblNewLabel_1 = new JLabel("NUMERO SUCURSAL: " + numSucursal);
 		lblNewLabel_1.setBounds(66, 148, 118, 19);
-		contentPane.add(lblNewLabel_1);
-		
-		txtNumSucursal = new JTextField();
-		txtNumSucursal.setBounds(214, 150, 96, 19);
-		contentPane.add(txtNumSucursal);
-		txtNumSucursal.setColumns(10);
+
 		btnAñadir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				crearCliente();
+				crearCliente(parent);
         		parent.setVisible(true);
         		parent.repaint();
         		dispose();
@@ -102,7 +108,6 @@ public class AñadirClienteFrame extends JFrame {
 			    txtNombre.setText("");
 			    txtApellido.setText("");
 			    txtContraseña.setText("");
-			    txtNumSucursal.setText("");
 			    parent.setVisible(true);
 			    parent.repaint();
 			    dispose();
@@ -122,62 +127,36 @@ public class AñadirClienteFrame extends JFrame {
 	    return prefijo + banco + restante.toString();
 	}
 
-    public void crearCliente() {
-	    String dni = txtDNI.getText().trim();
-	    String nombre = txtNombre.getText().trim();
-	    String apellido = txtApellido.getText().trim();
-	    String password = txtContraseña.getText().trim();
-	    String numSucursal = txtNumSucursal.getText().trim();
-	    double saldo;
+    public void crearCliente(TrabajadorFrame parent) {
 
-	    if (dni.isEmpty() || nombre.isEmpty() || apellido.isEmpty() || password.isEmpty() || numSucursal.isEmpty()) {
-	        JOptionPane.showMessageDialog(null, "Rellena todos los campos.");
-	        return;
-	    }
-	    saldo = 0;
-	    Connection conn = null;
-	    PreparedStatement psCliente = null;
-	    PreparedStatement psCuenta = null;
+        String username = parent.getUser().getUsername();
+        String[] infoSucursal = dbManager.getInfoSucursalTrabajador(username);
+        String numSucursal = infoSucursal[2];
 
-	    try {
-	        conn = DriverManager.getConnection("jdbc:sqlite:sqlite/banco.db/");
-	        conn.setAutoCommit(false); // IMPORTANTE
+        String dni = txtDNI.getText().trim();
+        String nombre = txtNombre.getText().trim();
+        String apellido = txtApellido.getText().trim();
+        String password = txtContraseña.getText().trim();
 
-	        String sqlCliente = "INSERT INTO cliente(dni, nombre, apellido, password) VALUES (?, ?, ?, ?)";
-	        psCliente = conn.prepareStatement(sqlCliente);
-	        psCliente.setString(1, dni);
-	        psCliente.setString(2, nombre);
-	        psCliente.setString(3, apellido);
-	        psCliente.setString(4, password);
-	        psCliente.executeUpdate();
+        if (dni.isEmpty() || nombre.isEmpty() || apellido.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Rellena todos los campos y verifica la sucursal del trabajador.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-	        String numCuenta = generarNumeroCuentaAleatorio();
+        String numCuenta = generarNumeroCuentaAleatorio();
 
-	        String sqlCuenta = "INSERT INTO cuenta(numcuenta, saldo, dni, numsucursal) VALUES (?, ?, ?, ?)";
-	        psCuenta = conn.prepareStatement(sqlCuenta);
-	        psCuenta.setString(1, numCuenta);
-	        psCuenta.setDouble(2, saldo);
-	        psCuenta.setString(3, dni);
-	        psCuenta.setString(4, numSucursal);
-	        psCuenta.executeUpdate();
+        String cuentaCreada = dbManager.crearClienteConCuenta(
+                dni, nombre, apellido, password, numSucursal, numCuenta
+        );
 
-	        conn.commit();
-	        JOptionPane.showMessageDialog(null, "Cliente y cuenta creados correctamente.\nNº Cuenta: " + numCuenta);
+        if (cuentaCreada != null) {
+            JOptionPane.showMessageDialog(null, "Cliente y cuenta creados correctamente.");
+        } else {
+            JOptionPane.showMessageDialog(null,
+                    "Error al crear el cliente. Comprueba que el DNI no este duplicado.",
+                    "Error de Creacion", JOptionPane.ERROR_MESSAGE
+            );
+        }
 
-
-	    } catch (Exception e) {
-	        try {
-	            if (conn != null) conn.rollback();
-	        } catch (SQLException ignored) {}
-
-	        JOptionPane.showMessageDialog(null, "Error al crear el cliente: " + e.getMessage());
-
-	    } finally {
-	        try {
-	            if (psCliente != null) psCliente.close();
-	            if (psCuenta != null) psCuenta.close();
-	            if (conn != null) conn.close();
-	        } catch (SQLException ignored) {}
-	    }
-	}
+    }
 }

@@ -29,6 +29,10 @@ public class TrabajadorFrame extends JFrame {
     private DatabaseManager dbManager;
     private String[] sucursalInfo;
 
+    public objetos.User getUser() {
+        return this.user;
+    }
+
     public TrabajadorFrame(User user) {
         this.user = user;
         this.dbManager = new DatabaseManager();
@@ -87,7 +91,7 @@ public class TrabajadorFrame extends JFrame {
 
         String welcomeMessage = "Bienvenido, " + user.getName();
         if (sucursalInfo != null) {
-            welcomeMessage += String.format(" | Sucursal: %s (%s)", sucursalInfo[0], sucursalInfo[1]);
+            welcomeMessage += String.format(" | Sucursal %s: %s (%s)", sucursalInfo[2], sucursalInfo[0], sucursalInfo[1]);
         }
         welcomeMessage += " | ";
 
