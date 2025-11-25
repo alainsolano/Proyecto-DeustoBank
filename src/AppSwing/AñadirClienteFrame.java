@@ -142,7 +142,7 @@ public class AñadirClienteFrame extends JFrame {
 	    PreparedStatement psCuenta = null;
 
 	    try {
-	        conn = DriverManager.getConnection("jdbc:sqlite:/C:/Users//h.aranzacistroqui//Downloads//banco.db/");
+	        conn = DriverManager.getConnection("jdbc:sqlite:sqlite/banco.db/");
 	        conn.setAutoCommit(false); // IMPORTANTE
 
 	        String sqlCliente = "INSERT INTO cliente(dni, nombre, apellido, password) VALUES (?, ?, ?, ?)";
