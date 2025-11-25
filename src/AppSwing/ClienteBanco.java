@@ -52,8 +52,10 @@ public class ClienteBanco {
     //queda por definir
 	public int  getSaldo() {
 		// TODO Auto-generated method stub
-		return 0;
+		return 100;
 	}
+	
+	//FALTA METODO SETSALDO
 
 	//queda por definir
 	public String[] getHistorialTransferencias() {

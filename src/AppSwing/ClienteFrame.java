@@ -5,6 +5,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 
 /**
@@ -188,16 +190,28 @@ public class ClienteFrame extends JFrame {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         panel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY));
 
-        JButton btnMovimientos = new JButton("Mis Movimientos");
+        JButton btnInvertir = new JButton("Invertir");
         JButton btnTransferir = new JButton("Transferir");
         JButton btnLogout = new JButton("Cerrar Sesión");
 
         // Lógica de los botones del footer
-        btnMovimientos.addActionListener(e -> cardLayout.show(mainCardPanel, MOVIMIENTOS));
+        btnInvertir.addActionListener((ActionListener) new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(mainCardPanel, MOVIMIENTOS);
+                
+                //falta obtener los datos del cliente que se haya logeado
+                ClienteBanco cliente = new ClienteBanco(null, null, null, null);
+                InvertirFrame ventanaInv = new InvertirFrame(ClienteFrame.this, cliente);
+                ventanaInv.setVisible(true);
+                ClienteFrame.this.setVisible(false);
+                	
+            }
+        });
         btnTransferir.addActionListener(e -> cardLayout.show(mainCardPanel, TRANSFERENCIAS));
         btnLogout.addActionListener(e -> logout());
 
-        panel.add(btnMovimientos);
+        panel.add(btnInvertir);
         panel.add(btnTransferir);
         panel.add(btnLogout);
         return panel;

@@ -11,7 +11,7 @@ import javax.swing.JOptionPane;
 
 public class DatabaseManager {
 
-    private static final String DB_URL = "jdbc:sqlite:C://Users//h.aranzacistroqui//Downloads//banco.db/";
+    private static final String DB_URL = "jdbc:sqlite:C://Users//jurgi.hernandez//Downloads//banco.db/";
 
     private Connection connect() {
         Connection conn = null;
