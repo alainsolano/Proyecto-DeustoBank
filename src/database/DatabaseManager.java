@@ -380,7 +380,52 @@ public class DatabaseManager {
         }
         return null;
     }
+ // Nuevo método en DatabaseManager.java
+    public static boolean modificarCliente(ClienteBanco cliente) {
+        String sql = "UPDATE cliente SET nombre=?, apellido=?, password=? WHERE dni=?";
+        
+        // Declaramos la conexión y el PreparedStatement fuera del try
+        Connection conn = null;
+        PreparedStatement pstmt = null;
 
+        try {
+            // 1. Intentamos conectar. Si falla, conn será null.
+            conn = connect(); 
+            
+            if (conn == null) {
+                // Si la conexión es null, salimos inmediatamente.
+                // El error de conexión ya se imprimió en connect().
+                return false; 
+            }
+
+            pstmt = conn.prepareStatement(sql);
+
+            // 2. Asignar los valores a los parámetros
+            pstmt.setString(1, cliente.getNombre());
+            pstmt.setString(2, cliente.getApellido());
+            pstmt.setString(3, cliente.getPassword());
+            pstmt.setString(4, cliente.getDni()); // Clave para el WHERE
+
+            // 3. Ejecutar la actualización
+            int filasAfectadas = pstmt.executeUpdate();
+
+            return filasAfectadas > 0; // true si se actualizó una fila
+            
+        } catch (SQLException e) {
+            System.err.println("Error SQL al modificar el cliente: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+            
+        } finally {
+            // 4. Aseguramos el cierre de los recursos (como en tu metodo crearClienteConCuenta)
+            try {
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException ignored) {
+                // Ignoramos errores al cerrar
+            }
+        }
+    }
 
 
 

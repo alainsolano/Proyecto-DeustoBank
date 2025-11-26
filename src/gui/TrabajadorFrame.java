@@ -23,6 +23,8 @@ public class TrabajadorFrame extends JFrame {
     private JTextField searchField;
     private TableRowSorter<DefaultTableModel> sorter;
 
+    
+    private User trabajadorUser;
     private JLabel detailId;
     private JLabel detailNombre;
     private JLabel detailCuenta;
@@ -300,6 +302,23 @@ public class TrabajadorFrame extends JFrame {
 
         for (Object[] row : clientes) {
             tableModel.addRow(row);
+        }
+    }
+    
+    public void actualizarListaClientes() {
+        // 1. Limpiar el modelo actual de la tabla
+        // (Asumo que tienes un DefaultTableModel llamado 'modeloTablaClientes')
+        if (tableModel.getRowCount() > 0) {
+            tableModel.setRowCount(0); 
+        }
+
+        // 2. Volver a cargar los datos desde la BBDD
+        // Usamos el método que ya existe en tu DatabaseManager
+        List<Object[]> clientesActualizados = dbManager.getClientesConCuenta(trabajadorUser.getUsername());
+
+        // 3. Añadir los nuevos datos al modelo de la tabla
+        for (Object[] clienteData : clientesActualizados) {
+            tableModel.addRow(clienteData);
         }
     }
 }

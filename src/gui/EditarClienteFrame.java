@@ -4,6 +4,9 @@ import objetos.ClienteBanco;
 import objetos.CuentaCorriente;
 
 import javax.swing.*;
+
+import database.DatabaseManager;
+
 import java.awt.*;
 
 public class EditarClienteFrame extends JFrame {
@@ -77,19 +80,29 @@ public class EditarClienteFrame extends JFrame {
         JButton btnGuardar = new JButton("Guardar");
         JButton btnCancelar = new JButton("Cancelar");
 
+     // Dentro del btnGuardar.addActionListener(e -> { ...
         btnGuardar.addActionListener(e -> {
+            // 1. Obtener y setear los nuevos datos al objeto cliente (ESTO YA LO TENÍAS)
             cliente.setNombre(fieldNombre.getText());
             cliente.setApellido(fieldApellido.getText());
             cliente.setPassword(new String(fieldPassword.getPassword()));
 
-            JOptionPane.showMessageDialog(this, "Datos actualizados.");
-            dispose();
-            parent.setVisible(true); 
-        });
+            // ********** COMIENZO DEL CAMBIO CLAVE **********
+            boolean exito = DatabaseManager.modificarCliente(cliente);
+            // ********** FIN DEL CAMBIO CLAVE **********
 
-        btnCancelar.addActionListener(e -> {
-            dispose();
-            parent.setVisible(true);
+            if (exito) {
+                JOptionPane.showMessageDialog(this, "Datos actualizados con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                
+                // 3. LLAMADA CRÍTICA: Actualizar la lista en la ventana principal
+                // Debes implementar este método en TrabajadorFrame.java
+                parent.actualizarListaClientes(); 
+                
+                dispose();
+                parent.setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al actualizar los datos del cliente.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         });
 
         panelBotones.add(btnGuardar);
