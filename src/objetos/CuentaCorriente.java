@@ -2,23 +2,23 @@ package objetos;
 
 public class CuentaCorriente {
 
-    private int numCuenta;
+    private String numCuenta;
     private double saldo;
     private String dni;        
     private int numSucursal;   
 
-    public CuentaCorriente(int numCuenta, double saldo, String dni, int numSucursal) {
+    public CuentaCorriente(String numCuenta, double saldo, String dni, int numSucursal) {
         this.numCuenta = numCuenta;
         this.saldo = saldo;
         this.dni = dni;
         this.numSucursal = numSucursal;
     }
 
-    public int getNumCuenta() {
+    public String getNumCuenta() {
         return numCuenta;
     }
 
-    public void setNumCuenta(int numCuenta) {
+    public void setNumCuenta(String numCuenta) {
         this.numCuenta = numCuenta;
     }
 

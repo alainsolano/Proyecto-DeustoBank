@@ -1,6 +1,7 @@
 package database;
 
 import objetos.ClienteBanco;
+import objetos.CuentaCorriente;
 import objetos.User;
 
 import java.sql.Connection;
@@ -334,6 +335,52 @@ public class DatabaseManager {
             return false;
         }
     }
+    
+    public ClienteBanco getClientePorDNI(String dni) {
+        String sql = "SELECT nombre, apellido, password FROM cliente WHERE dni = ?";
+
+        try (Connection conn = connect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, dni);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                String nombre = rs.getString("nombre");
+                String apellido = rs.getString("apellido");
+                String password = rs.getString("password");
+
+                return new ClienteBanco(dni, nombre, apellido, password);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+    
+    public CuentaCorriente getCuentaPorNumero(String numCuenta) {
+        String sql = "SELECT saldo, dni, numsucursal FROM cuenta WHERE numcuenta = ?";
+        try (Connection conn = connect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, numCuenta);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                double saldo = rs.getDouble("saldo");
+                String dni = rs.getString("dni");
+                int numSucursal = rs.getInt("numsucursal");
+
+                return new CuentaCorriente(numCuenta, saldo, dni, numSucursal);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
 
 

@@ -1,6 +1,8 @@
 package gui;
 
 import database.DatabaseManager;
+import objetos.ClienteBanco;
+import objetos.CuentaCorriente;
 import objetos.User;
 
 import javax.swing.*;
@@ -248,12 +250,29 @@ public class TrabajadorFrame extends JFrame {
         });
 
         btnEdit.addActionListener(e -> {
-            if (clientTable.getSelectedRow() == -1) {
+            int viewRow = clientTable.getSelectedRow();
+            if (viewRow == -1) {
                 JOptionPane.showMessageDialog(this, "Por favor, seleccione un cliente para editar.");
-            } else {
-                JOptionPane.showMessageDialog(this, "Funcionalidad 'Editar' en desarrollo.");
+                return;
             }
+
+            int modelRow = clientTable.convertRowIndexToModel(viewRow);
+            String dni = tableModel.getValueAt(modelRow, 0).toString();
+            String numCuenta = tableModel.getValueAt(modelRow, 3).toString();
+
+            ClienteBanco clienteSeleccionado = dbManager.getClientePorDNI(dni);
+            CuentaCorriente cuentaSeleccionada = dbManager.getCuentaPorNumero(numCuenta);
+
+            if (clienteSeleccionado == null || cuentaSeleccionada == null) {
+                JOptionPane.showMessageDialog(this, "No se pudo encontrar el cliente o la cuenta seleccionada.");
+                return;
+            }
+
+            EditarClienteFrame ventanaEditar = new EditarClienteFrame(TrabajadorFrame.this, clienteSeleccionado, cuentaSeleccionada);
+            ventanaEditar.setVisible(true);
+            TrabajadorFrame.this.setVisible(false);
         });
+
 
         btnDelete.addActionListener(e -> {
             if (clientTable.getSelectedRow() == -1) {
