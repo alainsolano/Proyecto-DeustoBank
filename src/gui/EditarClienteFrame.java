@@ -18,11 +18,13 @@ public class EditarClienteFrame extends JFrame {
     private JTextField fieldNombre;
     private JTextField fieldApellido;
     private JPasswordField fieldPassword;
+    private DatabaseManager dbManager;
 
     public EditarClienteFrame(TrabajadorFrame parent, ClienteBanco cliente, CuentaCorriente cuenta) {
         this.parent = parent;
         this.cliente = cliente;
         this.cuenta = cuenta;
+        this.dbManager = new DatabaseManager();
 
         setTitle("Editar datos del cliente");
         setSize(400, 330);
@@ -35,7 +37,6 @@ public class EditarClienteFrame extends JFrame {
     private void initComponents() {
         setLayout(new BorderLayout(10,10));
 
-        // Panel datos Cliente
         JPanel panelCliente = new JPanel(new GridLayout(4, 2, 8, 8));
         panelCliente.setBorder(BorderFactory.createTitledBorder("Datos Cliente"));
 
@@ -56,7 +57,6 @@ public class EditarClienteFrame extends JFrame {
         fieldPassword = new JPasswordField(cliente.getPassword());
         panelCliente.add(fieldPassword);
 
-        // Panel datos Cuenta
         JPanel panelCuenta = new JPanel(new GridLayout(3, 2, 8,8));
         panelCuenta.setBorder(BorderFactory.createTitledBorder("Datos Cuenta"));
 
@@ -75,33 +75,35 @@ public class EditarClienteFrame extends JFrame {
         fieldSucursal.setEditable(false);
         panelCuenta.add(fieldSucursal);
 
-        // Panel Botones
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton btnGuardar = new JButton("Guardar");
         JButton btnCancelar = new JButton("Cancelar");
 
-     // Dentro del btnGuardar.addActionListener(e -> { ...
         btnGuardar.addActionListener(e -> {
-            // 1. Obtener y setear los nuevos datos al objeto cliente (ESTO YA LO TENÍAS)
             cliente.setNombre(fieldNombre.getText());
             cliente.setApellido(fieldApellido.getText());
             cliente.setPassword(new String(fieldPassword.getPassword()));
 
-            // ********** COMIENZO DEL CAMBIO CLAVE **********
-            boolean exito = DatabaseManager.modificarCliente(cliente);
-            // ********** FIN DEL CAMBIO CLAVE **********
+            boolean exito = dbManager.modificarCliente(cliente);
 
             if (exito) {
                 JOptionPane.showMessageDialog(this, "Datos actualizados con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                
-                // 3. LLAMADA CRÍTICA: Actualizar la lista en la ventana principal
-                // Debes implementar este método en TrabajadorFrame.java
-                parent.actualizarListaClientes(); 
-                
                 dispose();
-                parent.setVisible(true);
+                if (parent != null) {
+                    parent.actualizarListaClientes();
+                    parent.setVisible(true);
+                    parent.toFront();
+                }
             } else {
                 JOptionPane.showMessageDialog(this, "Error al actualizar los datos del cliente.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        btnCancelar.addActionListener(e -> {
+            dispose();
+            if (parent != null) {
+                parent.setVisible(true);
+                parent.toFront();
             }
         });
 

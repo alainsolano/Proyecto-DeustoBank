@@ -23,8 +23,6 @@ public class TrabajadorFrame extends JFrame {
     private JTextField searchField;
     private TableRowSorter<DefaultTableModel> sorter;
 
-    
-    private User trabajadorUser;
     private JLabel detailId;
     private JLabel detailNombre;
     private JLabel detailCuenta;
@@ -41,7 +39,6 @@ public class TrabajadorFrame extends JFrame {
         this.user = user;
         this.dbManager = new DatabaseManager();
 
-        // Obtener info de sucursal antes de crear componentes
         this.sucursalInfo = dbManager.getInfoSucursalTrabajador(user.getUsername());
 
         setupWindow();
@@ -144,7 +141,6 @@ public class TrabajadorFrame extends JFrame {
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) { return false; }
-
             @Override
             public Class<?> getColumnClass(int columnIndex) {
                 return (columnIndex == 4) ? Double.class : String.class;
@@ -166,7 +162,10 @@ public class TrabajadorFrame extends JFrame {
             }
         });
 
-        return new JScrollPane(clientTable);
+        JScrollPane scrollPane = new JScrollPane(clientTable);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+        return scrollPane;
     }
 
     private JPanel createDetailPanel() {
@@ -275,7 +274,6 @@ public class TrabajadorFrame extends JFrame {
             TrabajadorFrame.this.setVisible(false);
         });
 
-
         btnDelete.addActionListener(e -> {
             if (clientTable.getSelectedRow() == -1) {
                 JOptionPane.showMessageDialog(this, "Seleccione un cliente para eliminar.");
@@ -306,17 +304,10 @@ public class TrabajadorFrame extends JFrame {
     }
     
     public void actualizarListaClientes() {
-        // 1. Limpiar el modelo actual de la tabla
-        // (Asumo que tienes un DefaultTableModel llamado 'modeloTablaClientes')
         if (tableModel.getRowCount() > 0) {
             tableModel.setRowCount(0); 
         }
-
-        // 2. Volver a cargar los datos desde la BBDD
-        // Usamos el método que ya existe en tu DatabaseManager
-        List<Object[]> clientesActualizados = dbManager.getClientesConCuenta(trabajadorUser.getUsername());
-
-        // 3. Añadir los nuevos datos al modelo de la tabla
+        List<Object[]> clientesActualizados = dbManager.getClientesConCuenta(user.getUsername());
         for (Object[] clienteData : clientesActualizados) {
             tableModel.addRow(clienteData);
         }

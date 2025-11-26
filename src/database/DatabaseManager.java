@@ -17,7 +17,7 @@ public class DatabaseManager {
 
     private static final String DB_URL = "jdbc:sqlite:sqlite/banco.db/";
 
-    private static Connection connect() {
+    private Connection connect() {
         Connection conn = null;
         try {
             Class.forName("org.sqlite.JDBC");
@@ -33,7 +33,6 @@ public class DatabaseManager {
         }
         return conn;
     }
-
 
     public User authenticateCliente(String dni, String password) {
         String sql = "SELECT dni, nombre, apellido FROM cliente WHERE dni = ? AND password = ?";
@@ -59,7 +58,6 @@ public class DatabaseManager {
         return null;
     }
 
-
     public User authenticateTrabajador(String username, String password) {
         String sql = "SELECT username, nombre, apellido, role "
                    + "FROM trabajador WHERE username = ? AND password = ?";
@@ -84,7 +82,6 @@ public class DatabaseManager {
         }
         return null;
     }
-
 
     public List<Object[]> getClientesConCuenta(String trabajadorUsername) {
         List<Object[]> clientes = new ArrayList<>();
@@ -136,7 +133,6 @@ public class DatabaseManager {
         return 0.0;
     }
 
-   
     public double getSaldoCuenta(String numCuenta) {
         String sql = "SELECT saldo FROM cuenta WHERE numcuenta = ?";
 
@@ -155,8 +151,6 @@ public class DatabaseManager {
         }
         return 0.0;
     }
-
-
 
     public List<Object[]> getMovimientos(String dni) {
         List<Object[]> movimientos = new ArrayList<>();
@@ -187,7 +181,6 @@ public class DatabaseManager {
         return movimientos;
     }
 
-
     public String[] getInfoSucursalTrabajador(String username) {
         String sql = "SELECT s.poblacion, s.provincia, s.numsucursal "
                    + "FROM sucursal s "
@@ -214,7 +207,6 @@ public class DatabaseManager {
         return null;
     }
 
-   
     public String crearClienteConCuenta(String dni, String nombre, String apellido, String password, String numSucursal, String numCuenta) {
         Connection conn = null;
         PreparedStatement psCliente = null;
@@ -224,7 +216,7 @@ public class DatabaseManager {
             conn = connect(); 
             if (conn == null) return null;
 
-            conn.setAutoCommit(false); // 
+            conn.setAutoCommit(false);
 
             String sqlCliente = "INSERT INTO cliente(dni, nombre, apellido, password) VALUES (?, ?, ?, ?)";
             psCliente = conn.prepareStatement(sqlCliente);
@@ -234,7 +226,6 @@ public class DatabaseManager {
             psCliente.setString(4, password);
             psCliente.executeUpdate();
 
-           
             String sqlCuenta = "INSERT INTO cuenta(numcuenta, saldo, dni, numsucursal) VALUES (?, ?, ?, ?)";
             psCuenta = conn.prepareStatement(sqlCuenta);
             psCuenta.setString(1, numCuenta);
@@ -263,79 +254,6 @@ public class DatabaseManager {
         }
     }
 
-
-    public static ClienteBanco cargarDesdeBD(String dni) {
-        String sql = "SELECT nombre, apellido, password FROM cliente WHERE dni = ?";
-
-        try (Connection conn = connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, dni);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                String nombre = rs.getString("nombre");
-                String apellido = rs.getString("apellido");
-                String password = rs.getString("password");
-
-                return new ClienteBanco(dni, nombre, apellido, password);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-    public String getCuentaPrincipal(String dni) {
-        String sql = "SELECT numcuenta FROM cuenta WHERE dni = ? LIMIT 1";
-        try (Connection conn = connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, dni);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) return rs.getString("numcuenta");
-        } catch (Exception e) { e.printStackTrace(); }
-
-        return null;
-    }
-    public static boolean actualizarSaldoCuenta(String numCuenta, double nuevoSaldo) {
-        String sql = "UPDATE cuenta SET saldo = ? WHERE numcuenta = ?";
-
-        try (Connection conn = connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setDouble(1, nuevoSaldo);
-            pstmt.setString(2, numCuenta);
-            return pstmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            System.err.println("Error en actualizarSaldoCuenta: " + e.getMessage());
-            return false;
-        }
-    }
-
-    public static boolean insertarMovimiento(String numCuenta, double cantidad) {
-
-        String sql = "INSERT INTO movimiento (cantidad, fecha, numcuenta) " +
-                     "VALUES (?, datetime('now'), ?)";
-
-        try (Connection conn = connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setDouble(1, cantidad);   // Cantidad ganada o perdida
-            pstmt.setString(2, numCuenta);  // Número de cuenta
-
-            pstmt.executeUpdate();
-            return true;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-    
     public ClienteBanco getClientePorDNI(String dni) {
         String sql = "SELECT nombre, apellido, password FROM cliente WHERE dni = ?";
 
@@ -359,7 +277,7 @@ public class DatabaseManager {
 
         return null;
     }
-    
+
     public CuentaCorriente getCuentaPorNumero(String numCuenta) {
         String sql = "SELECT saldo, dni, numsucursal FROM cuenta WHERE numcuenta = ?";
         try (Connection conn = connect();
@@ -380,53 +298,86 @@ public class DatabaseManager {
         }
         return null;
     }
- // Nuevo método en DatabaseManager.java
-    public static boolean modificarCliente(ClienteBanco cliente) {
+
+    public boolean modificarCliente(ClienteBanco cliente) {
         String sql = "UPDATE cliente SET nombre=?, apellido=?, password=? WHERE dni=?";
         
-        // Declaramos la conexión y el PreparedStatement fuera del try
         Connection conn = null;
         PreparedStatement pstmt = null;
 
         try {
-            // 1. Intentamos conectar. Si falla, conn será null.
             conn = connect(); 
-            
-            if (conn == null) {
-                // Si la conexión es null, salimos inmediatamente.
-                // El error de conexión ya se imprimió en connect().
-                return false; 
-            }
+            if (conn == null) return false; 
 
             pstmt = conn.prepareStatement(sql);
 
-            // 2. Asignar los valores a los parámetros
             pstmt.setString(1, cliente.getNombre());
             pstmt.setString(2, cliente.getApellido());
             pstmt.setString(3, cliente.getPassword());
-            pstmt.setString(4, cliente.getDni()); // Clave para el WHERE
+            pstmt.setString(4, cliente.getDni()); 
 
-            // 3. Ejecutar la actualización
             int filasAfectadas = pstmt.executeUpdate();
 
-            return filasAfectadas > 0; // true si se actualizó una fila
+            return filasAfectadas > 0; 
             
         } catch (SQLException e) {
             System.err.println("Error SQL al modificar el cliente: " + e.getMessage());
             e.printStackTrace();
             return false;
-            
         } finally {
-            // 4. Aseguramos el cierre de los recursos (como en tu metodo crearClienteConCuenta)
             try {
                 if (pstmt != null) pstmt.close();
                 if (conn != null) conn.close();
-            } catch (SQLException ignored) {
-                // Ignoramos errores al cerrar
-            }
+            } catch (SQLException ignored) {}
         }
     }
 
+    public boolean actualizarSaldoCuenta(String numCuenta, double nuevoSaldo) {
+        String sql = "UPDATE cuenta SET saldo = ? WHERE numcuenta = ?";
 
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
+            pstmt.setDouble(1, nuevoSaldo);
+            pstmt.setString(2, numCuenta);
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Error en actualizarSaldoCuenta: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean insertarMovimiento(String numCuenta, double cantidad) {
+        String sql = "INSERT INTO movimiento (cantidad, fecha, numcuenta) " +
+                     "VALUES (?, datetime('now'), ?)";
+
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setDouble(1, cantidad);
+            pstmt.setString(2, numCuenta);
+
+            pstmt.executeUpdate();
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public String getCuentaPrincipal(String dni) {
+        String sql = "SELECT numcuenta FROM cuenta WHERE dni = ? LIMIT 1";
+        try (Connection conn = connect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, dni);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) return rs.getString("numcuenta");
+        } catch (Exception e) { e.printStackTrace(); }
+
+        return null;
+    }
 }
