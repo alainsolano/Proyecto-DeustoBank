@@ -84,14 +84,16 @@ public class InvertirFrame extends JFrame {
 
     private void invertir() {
         double monto;
+
         try {
             monto = Double.parseDouble(txtMonto.getText());
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Introduce un monto válido.","Error",JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Introduce un monto válido.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
+
         if (monto <= 0 || monto > saldo) {
-            JOptionPane.showMessageDialog(this, "Monto fuera del saldo disponible.","Error",JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Monto fuera del saldo disponible.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -104,40 +106,50 @@ public class InvertirFrame extends JFrame {
                     Thread.sleep(700);
                 }
             } catch (InterruptedException ignored) {}
-            double multiplicador;
+
+            // Calcular resultado de inversión
             Random rnd = new Random();
-            switch(riesgo) {
+            double multiplicador;
+
+            switch (riesgo) {
                 case 0: multiplicador = 0.95 + 0.15 * rnd.nextDouble(); break;
-                case 1: multiplicador = 0.8 + 0.5 * rnd.nextDouble(); break;
-                default: multiplicador = 0.4 + 1.4 * rnd.nextDouble(); break;
+                case 1: multiplicador = 0.80 + 0.50 * rnd.nextDouble(); break;
+                default: multiplicador = 0.40 + 1.40 * rnd.nextDouble(); break;
             }
+
             double resultado = monto * multiplicador;
             double diferencia = resultado - monto;
-            saldo -= monto;
-            saldo += resultado;
 
-            String cuenta = new DatabaseManager().getCuentaPrincipal(cliente.getDni());
+            // Actualizar saldo
+            saldo = saldo - monto + resultado;
 
+            // Obtener cuenta principal
+            DatabaseManager db = new DatabaseManager();
+            String cuenta = db.getCuentaPrincipal(cliente.getDni());
 
             if (cuenta == null) {
                 JOptionPane.showMessageDialog(this, "No se encontró la cuenta del cliente.", "Error", JOptionPane.ERROR_MESSAGE);
-            } else {
-                boolean ok = DatabaseManager.actualizarSaldoCuenta(cuenta, saldo);
-                if (!ok) JOptionPane.showMessageDialog(this, "No se pudo guardar el saldo en la BD.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
-            parent.actualizarSaldoEnPantalla(saldo);
 
-            DatabaseManager db = new DatabaseManager();
+            // Guardar nuevo saldo
+            boolean ok = db.actualizarSaldoCuenta(cuenta, saldo);
+            if (!ok) {
+                JOptionPane.showMessageDialog(this, "No se pudo guardar el saldo en la BD.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
 
+            // ⭐ REGISTRAR MOVIMIENTO ⭐
+            String tipoMovimiento = (diferencia >= 0)
+                    ? "Inversión - Ganancia"
+                    : "Inversión - Pérdida";
 
-            db.actualizarSaldoCuenta(cuenta, saldo);
+            DatabaseManager.insertarMovimiento(cuenta, diferencia);
 
-
-           
-            
+            // Actualizar pantalla
             SwingUtilities.invokeLater(() -> {
                 lblContador.setText("");
                 lblSaldo.setText("Saldo disponible: " + String.format("%.2f €", saldo));
+
                 if (diferencia >= 0) {
                     lblResultado.setText("¡Has GANADO " + String.format("%.2f €", diferencia) + "!");
                     lblResultado.setForeground(Color.GREEN.darker());
@@ -145,8 +157,12 @@ public class InvertirFrame extends JFrame {
                     lblResultado.setText("Has PERDIDO " + String.format("%.2f €", -diferencia) + "...");
                     lblResultado.setForeground(Color.RED.darker());
                 }
-                parent.actualizarSaldoEnPantalla(saldo); 
+
+                // Actualizar saldo en el panel principal
+                parent.actualizarSaldoEnPantalla(saldo);
             });
+
         }).start();
     }
+
 }

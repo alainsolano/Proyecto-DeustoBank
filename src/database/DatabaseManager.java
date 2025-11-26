@@ -315,6 +315,25 @@ public class DatabaseManager {
         }
     }
 
+    public static boolean insertarMovimiento(String numCuenta, double cantidad) {
+
+        String sql = "INSERT INTO movimiento (cantidad, fecha, numcuenta) " +
+                     "VALUES (?, datetime('now'), ?)";
+
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setDouble(1, cantidad);   // Cantidad ganada o perdida
+            pstmt.setString(2, numCuenta);  // Número de cuenta
+
+            pstmt.executeUpdate();
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 
 
