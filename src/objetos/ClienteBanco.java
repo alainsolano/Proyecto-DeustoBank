@@ -1,6 +1,8 @@
 package objetos;
 
+import java.util.List;
 
+import database.DatabaseManager;
 
 public class ClienteBanco {
 
@@ -48,18 +50,43 @@ public class ClienteBanco {
         this.password = password;
     }
 
-    
-    //queda por definir
-	public int  getSaldo() {
-		// TODO Auto-generated method stub
-		return 100;
-	}
-	
-	//FALTA METODO SETSALDO
 
-	//queda por definir
-	public String[] getHistorialTransferencias() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public double getSaldo() {
+        DatabaseManager db = new DatabaseManager();
+        String cuenta = db.getCuentaPrincipal(this.dni);
+        if (cuenta == null) return 0.0;
+        return db.getSaldoCuenta(cuenta);
+    }
+
+
+    public String[] getHistorialTransferencias() {
+
+        DatabaseManager db = new DatabaseManager();
+        List<Object[]> movimientos = db.getMovimientos(this.dni);
+
+        if (movimientos == null || movimientos.isEmpty()) {
+            return new String[]{"No hay movimientos registrados."};
+        }
+
+        String[] historial = new String[movimientos.size()];
+
+        for (int i = 0; i < movimientos.size(); i++) {
+            Object[] mov = movimientos.get(i);
+            String fecha = mov[0].toString();
+            String cantidad = mov[1].toString();
+            String numCuenta = mov[2].toString();
+
+            historial[i] = fecha + " | " + cantidad + "€ | Cuenta: " + numCuenta;
+        }
+
+        return historial;
+    }
+    public double getSaldoCuentaPrincipal() {
+        DatabaseManager db = new DatabaseManager();
+        String cuenta = db.getCuentaPrincipal(this.dni);
+        return db.getSaldoCuenta(cuenta);
+    }
+
+
+
 }

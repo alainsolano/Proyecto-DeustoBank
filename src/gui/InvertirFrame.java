@@ -8,6 +8,8 @@ import java.awt.event.*;
 import java.util.Random;
 import javax.swing.border.EmptyBorder;
 
+import database.DatabaseManager;
+
 public class InvertirFrame extends JFrame {
 
     private static final long serialVersionUID = 1L;
@@ -28,7 +30,7 @@ public class InvertirFrame extends JFrame {
         setBounds(100, 100, 400, 360);
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
-        contentPane.setLayout(new GridLayout(9, 1, 5, 5)); // espacio para el botón extra
+        contentPane.setLayout(new GridLayout(9, 1, 5, 5)); 
         setLocationRelativeTo(null);
         setContentPane(contentPane);
 
@@ -61,15 +63,21 @@ public class InvertirFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 invertir();
+       
+                DatabaseManager db = new DatabaseManager(); 
+                String cuenta = new DatabaseManager().getCuentaPrincipal(cliente.getDni());
+                db.actualizarSaldoCuenta(cuenta, saldo);         
+                parent.actualizarSaldoEnPantalla(saldo);        
+
             }
         });
 
         btnVolver.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Actualiza datos en parent si lo necesitas aquí
-                parent.setVisible(true); // vuelve a mostrar la ventana cliente
-                dispose();               // cierra la ventana de inversión
+               
+                parent.setVisible(true); 
+                dispose();               
             }
         });
     }
@@ -108,8 +116,24 @@ public class InvertirFrame extends JFrame {
             saldo -= monto;
             saldo += resultado;
 
-            // Actualizaría el saldo en el objeto cliente y la ventana parent   
-           //cliente.setSaldo(saldo);
+            String cuenta = new DatabaseManager().getCuentaPrincipal(cliente.getDni());
+
+
+            if (cuenta == null) {
+                JOptionPane.showMessageDialog(this, "No se encontró la cuenta del cliente.", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                boolean ok = DatabaseManager.actualizarSaldoCuenta(cuenta, saldo);
+                if (!ok) JOptionPane.showMessageDialog(this, "No se pudo guardar el saldo en la BD.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            parent.actualizarSaldoEnPantalla(saldo);
+
+            DatabaseManager db = new DatabaseManager();
+
+
+            db.actualizarSaldoCuenta(cuenta, saldo);
+
+
+           
             
             SwingUtilities.invokeLater(() -> {
                 lblContador.setText("");
@@ -121,7 +145,7 @@ public class InvertirFrame extends JFrame {
                     lblResultado.setText("Has PERDIDO " + String.format("%.2f €", -diferencia) + "...");
                     lblResultado.setForeground(Color.RED.darker());
                 }
-                //parent.actualizarSaldoEnPantalla(saldo); // LLama a este método si existe en ClienteFrame
+                parent.actualizarSaldoEnPantalla(saldo); 
             });
         }).start();
     }

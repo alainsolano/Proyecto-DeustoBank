@@ -10,6 +10,9 @@ import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.List;
 
 /**
@@ -186,9 +189,7 @@ public class ClienteFrame extends JFrame {
         return panel;
     }
 
-    /**
-     * Crea el footer con los botones de navegación.
-     */
+
     private JPanel createFooterPanel() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         panel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY));
@@ -197,15 +198,15 @@ public class ClienteFrame extends JFrame {
         JButton btnTransferir = new JButton("Transferir");
         JButton btnLogout = new JButton("Cerrar Sesión");
 
-        // Lógica de los botones del footer
+
         btnInvertir.addActionListener((ActionListener) new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 cardLayout.show(mainCardPanel, MOVIMIENTOS);
-                
-                //falta obtener los datos del cliente que se haya logeado
-                ClienteBanco cliente = new ClienteBanco(null, null, null, null);
-                InvertirFrame ventanaInv = new InvertirFrame(ClienteFrame.this, cliente);
+                String dni = user.getUsername();
+                ClienteBanco c = DatabaseManager.cargarDesdeBD(dni);
+
+                InvertirFrame ventanaInv = new InvertirFrame(ClienteFrame.this, c);
                 ventanaInv.setVisible(true);
                 ClienteFrame.this.setVisible(false);
                 	
@@ -220,31 +221,52 @@ public class ClienteFrame extends JFrame {
         return panel;
     }
 
-    /**
-     * Llama al DatabaseManager para obtener y mostrar
-     * el saldo y los movimientos del cliente.
-     */
-    private void loadMovimientosData() {
-        // 1. Cargar Saldo
-        // Llama a getSaldo, que hace un SUM() de todas las cuentas del DNI
-        double saldo = dbManager.getSaldo(user.getUsername()); // (Recordar que DNI se guarda en username)
-        saldoLabel.setText(String.format("$%,.2f", saldo));
 
-        // 2. Cargar Movimientos
+    private void loadMovimientosData() {
+
+    	String cuentaPrincipal = dbManager.getCuentaPrincipal(user.getUsername());
+    	double saldo;
+    	if (cuentaPrincipal != null) {
+    	    saldo = dbManager.getSaldoCuenta(cuentaPrincipal);
+    	} else {
+
+    	    saldo = dbManager.getSaldoTotalPorDni(user.getUsername());
+    	}
+    	saldoLabel.setText(String.format("$%,.2f", saldo));
+
+
         movementsTableModel.setRowCount(0); // Limpiar tabla
 
-        // Llama a getMovimientos, que busca todos los movimientos de todas las cuentas del DNI
         List<Object[]> movimientos = dbManager.getMovimientos(user.getUsername());
         for (Object[] row : movimientos) {
             movementsTableModel.addRow(row);
         }
     }
 
-    /**
-     * Cierra la sesión y vuelve al Login.
-     */
+ 
     private void logout() {
         dispose();
         new LoginFrame();
     }
+    public void actualizarSaldoEnPantalla(double nuevoSaldo) {
+
+        String cuentaPrincipal = dbManager.getCuentaPrincipal(user.getUsername());
+        double saldoReal;
+        if (cuentaPrincipal != null) {
+            saldoReal = dbManager.getSaldoCuenta(cuentaPrincipal);
+        } else {
+            saldoReal = dbManager.getSaldoTotalPorDni(user.getUsername());
+        }
+        saldoLabel.setText(String.format("$%,.2f", saldoReal));
+
+        movementsTableModel.setRowCount(0);
+        List<Object[]> movimientos = dbManager.getMovimientos(user.getUsername());
+        for (Object[] row : movimientos) {
+            movementsTableModel.addRow(row);
+        }
+    }
+
+    
+
+
 }

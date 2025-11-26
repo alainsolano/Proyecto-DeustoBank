@@ -1,5 +1,6 @@
 package database;
 
+import objetos.ClienteBanco;
 import objetos.User;
 
 import java.sql.Connection;
@@ -15,7 +16,7 @@ public class DatabaseManager {
 
     private static final String DB_URL = "jdbc:sqlite:sqlite/banco.db/";
 
-    private Connection connect() {
+    private static Connection connect() {
         Connection conn = null;
         try {
             Class.forName("org.sqlite.JDBC");
@@ -115,7 +116,7 @@ public class DatabaseManager {
         return clientes;
     }
 
-    public double getSaldo(String dni) {
+    public double getSaldoTotalPorDni(String dni) {
         String sql = "SELECT SUM(saldo) AS saldo_total FROM cuenta WHERE dni = ?";
 
         try (Connection conn = connect();
@@ -124,13 +125,36 @@ public class DatabaseManager {
             pstmt.setString(1, dni);
             ResultSet rs = pstmt.executeQuery();
 
-            if (rs.next()) return rs.getDouble("saldo_total");
+            if (rs.next()) {
+                return rs.getDouble("saldo_total");
+            }
 
         } catch (SQLException e) {
-            System.err.println("Error en getSaldo: " + e.getMessage());
+            System.err.println("Error en getSaldoTotalPorDni: " + e.getMessage());
         }
         return 0.0;
     }
+
+   
+    public double getSaldoCuenta(String numCuenta) {
+        String sql = "SELECT saldo FROM cuenta WHERE numcuenta = ?";
+
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, numCuenta);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getDouble("saldo");
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error en getSaldoCuenta: " + e.getMessage());
+        }
+        return 0.0;
+    }
+
 
 
     public List<Object[]> getMovimientos(String dni) {
@@ -152,7 +176,7 @@ public class DatabaseManager {
                 movimientos.add(new Object[]{
                         rs.getString("fecha"),
                         rs.getDouble("cantidad"),
-                        rs.getString("numcuenta") // ← Añadido. Antes faltaba.
+                        rs.getString("numcuenta") 
                 });
             }
 
@@ -189,23 +213,18 @@ public class DatabaseManager {
         return null;
     }
 
-    /**
-     * Inserta un nuevo cliente y le asigna una cuenta bancaria con saldo 0.
-     * Utiliza una transacción para asegurar que ambos INSERTs se completen o ninguno lo haga.
-     * @return El número de cuenta generado si la operación fue exitosa, o null en caso de error.
-     */
+   
     public String crearClienteConCuenta(String dni, String nombre, String apellido, String password, String numSucursal, String numCuenta) {
         Connection conn = null;
         PreparedStatement psCliente = null;
         PreparedStatement psCuenta = null;
 
         try {
-            conn = connect(); // 1. Abrir conexión
+            conn = connect(); 
             if (conn == null) return null;
 
-            conn.setAutoCommit(false); // 2. Iniciar Transacción
+            conn.setAutoCommit(false); // 
 
-            // --- 2.1 INSERT en la tabla cliente ---
             String sqlCliente = "INSERT INTO cliente(dni, nombre, apellido, password) VALUES (?, ?, ?, ?)";
             psCliente = conn.prepareStatement(sqlCliente);
             psCliente.setString(1, dni);
@@ -214,27 +233,27 @@ public class DatabaseManager {
             psCliente.setString(4, password);
             psCliente.executeUpdate();
 
-            // --- 2.2 INSERT en la tabla cuenta ---
+           
             String sqlCuenta = "INSERT INTO cuenta(numcuenta, saldo, dni, numsucursal) VALUES (?, ?, ?, ?)";
             psCuenta = conn.prepareStatement(sqlCuenta);
             psCuenta.setString(1, numCuenta);
-            psCuenta.setDouble(2, 0.0); // Saldo inicial a 0.0
+            psCuenta.setDouble(2, 0.0); 
             psCuenta.setString(3, dni);
             psCuenta.setString(4, numSucursal);
             psCuenta.executeUpdate();
 
-            conn.commit(); // 3. Confirmar (Guardar) la Transacción
-            return numCuenta; // Indica éxito
+            conn.commit(); 
+            return numCuenta; 
 
         } catch (SQLException e) {
             try {
-                if (conn != null) conn.rollback(); // 4. Deshacer si hay error
+                if (conn != null) conn.rollback(); 
             } catch (SQLException ignored) {}
             System.err.println("Error al crear el cliente en BBDD: " + e.getMessage());
-            return null; // Indica fallo
+            return null; 
 
         } finally {
-            // 5. Cerrar recursos
+           
             try {
                 if (psCliente != null) psCliente.close();
                 if (psCuenta != null) psCuenta.close();
@@ -242,5 +261,61 @@ public class DatabaseManager {
             } catch (SQLException ignored) {}
         }
     }
+
+
+    public static ClienteBanco cargarDesdeBD(String dni) {
+        String sql = "SELECT nombre, apellido, password FROM cliente WHERE dni = ?";
+
+        try (Connection conn = connect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, dni);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                String nombre = rs.getString("nombre");
+                String apellido = rs.getString("apellido");
+                String password = rs.getString("password");
+
+                return new ClienteBanco(dni, nombre, apellido, password);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+    public String getCuentaPrincipal(String dni) {
+        String sql = "SELECT numcuenta FROM cuenta WHERE dni = ? LIMIT 1";
+        try (Connection conn = connect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, dni);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) return rs.getString("numcuenta");
+        } catch (Exception e) { e.printStackTrace(); }
+
+        return null;
+    }
+    public static boolean actualizarSaldoCuenta(String numCuenta, double nuevoSaldo) {
+        String sql = "UPDATE cuenta SET saldo = ? WHERE numcuenta = ?";
+
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setDouble(1, nuevoSaldo);
+            pstmt.setString(2, numCuenta);
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Error en actualizarSaldoCuenta: " + e.getMessage());
+            return false;
+        }
+    }
+
+
+
 
 }
