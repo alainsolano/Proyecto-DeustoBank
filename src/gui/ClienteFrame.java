@@ -134,15 +134,57 @@ public class ClienteFrame extends JFrame {
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.EAST;
         JButton transferButton = new JButton("Realizar Transferencia");
-        transferButton.addActionListener(e ->
-                JOptionPane.showMessageDialog(this, "Funcionalidad 'Transferir' en desarrollo.")
-        );
+        transferButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JTextField txtCuentaDestino = (JTextField) panel.getComponent(1);
+                JTextField txtCantidad = (JTextField) panel.getComponent(3);
+                JTextField txtConcepto = (JTextField) panel.getComponent(5);
+                String cuentaDestino = txtCuentaDestino.getText().trim();
+                String cantidadTxt = txtCantidad.getText().trim();
+                String concepto = txtConcepto.getText().trim();
+                if (cuentaDestino.isEmpty() || cantidadTxt.isEmpty()) {
+                    JOptionPane.showMessageDialog(panel, "Rellena todos los campos.");
+                    return;
+                }
+                double cantidad;
+                try {
+                    cantidad = Double.parseDouble(cantidadTxt);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(panel, "Cantidad no válida.");
+                    return;
+                }
+                if (cantidad <= 0) {
+                    JOptionPane.showMessageDialog(panel, "La cantidad debe ser mayor que 0.");
+                    return;
+                }
+                String dniCliente = user.getUsername();
+                String cuentaOrigen = dbManager.getCuentaPrincipal(dniCliente);
+                if (cuentaOrigen == null) {
+                    JOptionPane.showMessageDialog(panel, "No se ha encontrado tu cuenta principal.");
+                    return;
+                }
+                boolean ok = dbManager.realizarTransferencia(
+                        cuentaOrigen,
+                        cuentaDestino,
+                        cantidad,
+                        concepto
+                );
+                if (!ok) {
+                    JOptionPane.showMessageDialog(panel, "Error realizando la transferencia.");
+                    return;
+                }
+                JOptionPane.showMessageDialog(panel, "Transferencia realizada con éxito.");
+                actualizarSaldoEnPantalla(0); 
+                txtCuentaDestino.setText("");
+                txtCantidad.setText("");
+                txtConcepto.setText("");
+            }
+        });
         panel.add(transferButton, gbc);
-
         gbc.gridx = 0; gbc.gridy = 5;
         gbc.weighty = 1.0;
         panel.add(new JLabel(""), gbc);
-
         return panel;
     }
 

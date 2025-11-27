@@ -380,4 +380,43 @@ public class DatabaseManager {
 
         return null;
     }
+    public boolean realizarTransferencia(String cuentaOrigen, String cuentaDestino, double cantidad, String concepto) {
+        String sqlInsert = "INSERT INTO movimiento (cantidad, fecha, numcuenta) VALUES (?, datetime('now'), ?)";
+        String sqlUpdate = "UPDATE cuenta SET saldo = saldo + ? WHERE numcuenta = ?";
+
+        try (Connection conn = connect()) {
+
+            conn.setAutoCommit(false);
+
+            try (PreparedStatement ps1 = conn.prepareStatement(sqlInsert);
+                 PreparedStatement ps2 = conn.prepareStatement(sqlInsert);
+                 PreparedStatement ps3 = conn.prepareStatement(sqlUpdate);
+                 PreparedStatement ps4 = conn.prepareStatement(sqlUpdate)) {
+
+                ps1.setDouble(1, -cantidad);
+                ps1.setString(2, cuentaOrigen);
+                ps1.executeUpdate();
+
+                ps2.setDouble(1, cantidad);
+                ps2.setString(2, cuentaDestino);
+                ps2.executeUpdate();
+
+                ps3.setDouble(1, -cantidad);
+                ps3.setString(2, cuentaOrigen);
+                ps3.executeUpdate();
+
+                ps4.setDouble(1, cantidad);
+                ps4.setString(2, cuentaDestino);
+                ps4.executeUpdate();
+
+                conn.commit();
+                return true;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }
