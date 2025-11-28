@@ -90,6 +90,7 @@ public class AñadirClienteFrame extends JFrame {
         btnAñadir.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 crearCliente(parent);
+                parent.actualizarTablaClientes();
                 parent.setVisible(true);
                 parent.repaint();
                 dispose();
@@ -106,6 +107,7 @@ public class AñadirClienteFrame extends JFrame {
                 dispose();
             }
         });
+        
     }
 
     public String generarNumeroCuentaAleatorio() {
@@ -150,6 +152,8 @@ public class AñadirClienteFrame extends JFrame {
                     "Error de Creacion", JOptionPane.ERROR_MESSAGE
             );
         }
+        
 
     }
+    
 }

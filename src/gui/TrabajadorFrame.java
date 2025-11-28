@@ -326,7 +326,16 @@ public class TrabajadorFrame extends JFrame {
             tableModel.addRow(row);
         }
     }
-    
+    public void actualizarTablaClientes() {
+        tableModel.setRowCount(0);
+
+        List<Object[]> clientes = dbManager.getClientesConCuenta(user.getUsername());
+
+        for (Object[] fila : clientes) {
+            tableModel.addRow(fila);
+        }
+    }
+
     public void actualizarListaClientes() {
         if (tableModel.getRowCount() > 0) {
             tableModel.setRowCount(0); 
