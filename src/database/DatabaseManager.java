@@ -418,5 +418,34 @@ public class DatabaseManager {
             return false;
         }
     }
+    
+    public boolean eliminarCuentaPorNumero(String numCuenta) {
+        String sql = "DELETE FROM cuenta WHERE numcuenta = ?";
+        try (Connection conn = connect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, numCuenta);
+            int filas = ps.executeUpdate();
+            return filas > 0;
+        } catch (SQLException e) {
+            System.err.println("Error al eliminar cuenta: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean eliminarClientePorDni(String dni) {
+        String sql = "DELETE FROM cliente WHERE dni = ?";
+        try (Connection conn = connect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, dni);
+            int filas = ps.executeUpdate();
+            return filas > 0;
+        } catch (SQLException e) {
+            System.err.println("Error al eliminar cliente: " + e.getMessage());
+            return false;
+        }
+    }
+
 
 }

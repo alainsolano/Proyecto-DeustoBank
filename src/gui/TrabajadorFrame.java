@@ -275,15 +275,39 @@ public class TrabajadorFrame extends JFrame {
         });
 
         btnDelete.addActionListener(e -> {
-            if (clientTable.getSelectedRow() == -1) {
+            int viewRow = clientTable.getSelectedRow();
+            if (viewRow == -1) {
                 JOptionPane.showMessageDialog(this, "Seleccione un cliente para eliminar.");
-            } else if (JOptionPane.showConfirmDialog(this,
-                    "¿Está seguro de eliminar al cliente?",
-                    "Confirmar", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                return;
+            }
 
-                JOptionPane.showMessageDialog(this, "Funcionalidad 'Eliminar' en desarrollo.");
+            int opcion = JOptionPane.showConfirmDialog(
+                    this,
+                    "¿Está seguro de eliminar al cliente y su(s) cuenta(s)?",
+                    "Confirmar eliminación",
+                    JOptionPane.YES_NO_OPTION
+            );
+
+            if (opcion != JOptionPane.YES_OPTION) {
+                return;
+            }
+
+            int modelRow = clientTable.convertRowIndexToModel(viewRow);
+            String dni = tableModel.getValueAt(modelRow, 0).toString();
+            String numCuenta = tableModel.getValueAt(modelRow, 3).toString();
+
+            boolean okCuenta = dbManager.eliminarCuentaPorNumero(numCuenta);
+            boolean okCliente = dbManager.eliminarClientePorDni(dni);
+
+            if (okCuenta && okCliente) {
+                tableModel.removeRow(modelRow);
+                clearDetailPanel();
+                JOptionPane.showMessageDialog(this, "Cliente eliminado correctamente.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al eliminar el cliente o su cuenta en la BBDD.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
+
 
         panel.add(btnAdd);
         panel.add(Box.createRigidArea(new Dimension(0, 10)));
