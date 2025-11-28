@@ -229,7 +229,7 @@ public class DatabaseManager {
             String sqlCuenta = "INSERT INTO cuenta(numcuenta, saldo, dni, numsucursal) VALUES (?, ?, ?, ?)";
             psCuenta = conn.prepareStatement(sqlCuenta);
             psCuenta.setString(1, numCuenta);
-            psCuenta.setDouble(2, 0.0); 
+            psCuenta.setDouble(2, 100.0); 
             psCuenta.setString(3, dni);
             psCuenta.setString(4, numSucursal);
             psCuenta.executeUpdate();
@@ -245,7 +245,6 @@ public class DatabaseManager {
             return null; 
 
         } finally {
-           
             try {
                 if (psCliente != null) psCliente.close();
                 if (psCuenta != null) psCuenta.close();
@@ -253,6 +252,7 @@ public class DatabaseManager {
             } catch (SQLException ignored) {}
         }
     }
+
 
     public ClienteBanco getClientePorDNI(String dni) {
         String sql = "SELECT nombre, apellido, password FROM cliente WHERE dni = ?";
