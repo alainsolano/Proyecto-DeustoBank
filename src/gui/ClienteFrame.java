@@ -64,7 +64,6 @@ public class ClienteFrame extends JFrame {
         return panel;
     }
 
-    // ======= MODIFICADO SOLO ESTE METODO =======
     private JPanel createMovimientosPanel() {
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         JPanel saldoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -87,14 +86,13 @@ public class ClienteFrame extends JFrame {
         movementsTable.setRowSorter(new TableRowSorter<>(movementsTableModel));
         JScrollPane scrollPane = new JScrollPane(movementsTable);
 
-        // Scroll vertical SIEMPRE visible
+
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
         panel.add(scrollPane, BorderLayout.CENTER);
 
         return panel;
     }
-    // ===========================================
 
     private JPanel createTransferenciasPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
@@ -133,6 +131,7 @@ public class ClienteFrame extends JFrame {
         gbc.weightx = 0;
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.EAST;
+        JButton btnVolver = new JButton("Volver");
         JButton transferButton = new JButton("Realizar Transferencia");
         transferButton.addActionListener(new ActionListener() {
             @Override
@@ -181,8 +180,31 @@ public class ClienteFrame extends JFrame {
                 txtConcepto.setText("");
             }
         });
+        btnVolver.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JTextField txtCuentaDestino = (JTextField) panel.getComponent(1);
+                JTextField txtCantidad = (JTextField) panel.getComponent(3);
+                JTextField txtConcepto = (JTextField) panel.getComponent(5);
+                
+                txtCuentaDestino.setText("");
+                txtCantidad.setText("");
+                txtConcepto.setText("");
+
+                cardLayout.show(mainCardPanel, MOVIMIENTOS);
+            }
+        });
+
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        gbc.anchor = GridBagConstraints.EAST;
         panel.add(transferButton, gbc);
-        gbc.gridx = 0; gbc.gridy = 5;
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.anchor = GridBagConstraints.WEST;
+        panel.add(btnVolver, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 5;
         gbc.weighty = 1.0;
         panel.add(new JLabel(""), gbc);
         return panel;
