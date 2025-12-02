@@ -25,79 +25,107 @@ public class LoginFrame extends JFrame implements ActionListener {
 
     private void setupWindow() {
         setTitle("Deusto Bank - Login");
-        setSize(380, 260);
+        setSize(400, 300);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
 
         
-        getContentPane().setBackground(new Color(245, 245, 245));
+        getContentPane().setBackground(new Color(45, 45, 45));
         setLayout(new GridBagLayout());
     }
 
     private void createComponents() {
 
         JPanel card = new JPanel(new BorderLayout(15, 15));
-        card.setPreferredSize(new Dimension(330, 230));
-        card.setBackground(Color.WHITE);
+        card.setPreferredSize(new Dimension(350, 250));
+        card.setBackground(new Color(60, 63, 65));
         card.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 200)),
-                BorderFactory.createEmptyBorder(20, 20, 20, 20)
+                BorderFactory.createLineBorder(new Color(90, 90, 90)),
+                BorderFactory.createEmptyBorder(25, 25, 25, 25)
         ));
 
         
         JLabel title = new JLabel("DEUSTO BANK", JLabel.CENTER);
-        title.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        title.setForeground(new Color(0, 70, 140));
+        title.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        title.setForeground(new Color(135, 206, 250));
         card.add(title, BorderLayout.NORTH);
 
         JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setBackground(Color.WHITE);
+        formPanel.setBackground(new Color(60, 63, 65));
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(8, 5, 8, 5);
+        gbc.insets = new Insets(10, 5, 10, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
       
         gbc.gridx = 0; gbc.gridy = 0;
         JLabel lblUser = new JLabel("Usuario:");
         lblUser.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        lblUser.setForeground(new Color(200, 200, 200));
         formPanel.add(lblUser, gbc);
 
         gbc.gridx = 1;
         txtUsername = new JTextField(12);
-        txtUsername.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        formPanel.add(txtUsername, gbc);
+        txtUsername.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        txtUsername.setBackground(new Color(75, 78, 80)); 
+        txtUsername.setForeground(Color.WHITE);
+        txtUsername.setCaretColor(Color.WHITE);
+        txtUsername.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(135, 206, 250), 1),
+            BorderFactory.createEmptyBorder(5, 5, 5, 5)
+        ));        formPanel.add(txtUsername, gbc);
 
     
         gbc.gridx = 0; gbc.gridy = 1;
         JLabel lblPass = new JLabel("Contraseña:");
         lblPass.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        lblPass.setForeground(new Color(200, 200, 200));
         formPanel.add(lblPass, gbc);
 
         gbc.gridx = 1;
         txtPassword = new JPasswordField(12);
-        txtPassword.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        formPanel.add(txtPassword, gbc);
+        txtPassword.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        txtPassword.setBackground(new Color(75, 78, 80)); 
+        txtPassword.setForeground(Color.WHITE);
+        txtPassword.setCaretColor(Color.WHITE);
+        txtPassword.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(135, 206, 250), 1),
+            BorderFactory.createEmptyBorder(5, 5, 5, 5)
+        ));        formPanel.add(txtPassword, gbc);
 
         
         
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground(Color.WHITE);
+        buttonPanel.setBackground(new Color(60, 63, 65));
 
         btnLogin = new JButton("Entrar");
         btnLogin.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        btnLogin.setBackground(new Color(0, 90, 180));
-        btnLogin.setForeground(Color.WHITE);
+        btnLogin.setBackground(new Color(135, 206, 250));
+        btnLogin.setForeground(new Color(45, 45, 45));
         btnLogin.setFocusPainted(false);
-        btnLogin.setBorder(BorderFactory.createEmptyBorder(6, 14, 6, 14));
+        btnLogin.setBorder(BorderFactory.createEmptyBorder(8, 18, 8, 18));
 
         btnClear = new JButton("Limpiar");
-        btnClear.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-
+        btnClear.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        btnClear.setBackground(new Color(75, 78, 80)); 
+        btnClear.setForeground(Color.WHITE);
+        btnClear.setFocusPainted(false);
         buttonPanel.add(btnLogin);
         buttonPanel.add(btnClear);
-
+        btnClear.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(150, 150, 150), 1),
+                BorderFactory.createEmptyBorder(7, 17, 7, 17)
+            ));
+        btnClear.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnClear.setBackground(new Color(90, 93, 95)); // Color un poco más claro al pasar el ratón
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnClear.setBackground(new Color(75, 78, 80));
+            }
+        });
+        
         gbc.gridx = 0; 
         gbc.gridy = 2; 
         gbc.gridwidth = 2;
