@@ -4,6 +4,7 @@ import objetos.ClienteBanco;
 import objetos.CuentaCorriente;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import database.DatabaseManager;
 
@@ -22,13 +23,17 @@ public class EditarClienteFrame extends JFrame {
     private JPasswordField fieldPassword;
     private DatabaseManager dbManager;
 
-    // --- Paleta de Colores del Tema Oscuro ---
-    private static final Color DARK_BACKGROUND = new Color(45, 45, 45); // Main BG
-    private static final Color FIELD_BACKGROUND = new Color(60, 63, 65); // Lighter Panel/Field BG
-    private static final Color FOREGROUND_TEXT = new Color(200, 200, 200); // Light gray text
-    private static final Color BUTTON_BASE_COLOR = new Color(105, 105, 255); // Primary Button BG (0x6969FF)
-    private static final Color BUTTON_HOVER_COLOR = new Color(123, 123, 255); // Lighter Blue (0x7B7BFF)
-    private static final Color BUTTON_PRESSED_COLOR = new Color(80, 80, 216); // Darker Blue (0x5050D8)
+    // --- Paleta de Colores del Tema Oscuro (Inspiración iOS Dark Mode) ---
+    private static final Color DARK_BACKGROUND = new Color(28, 28, 30); // iOS System Background
+    private static final Color FIELD_BACKGROUND = new Color(44, 44, 46); // iOS Secondary System Background (Card BG)
+    private static final Color FIELD_LIGHTER_BACKGROUND = new Color(58, 58, 60); // Text Field BG
+    private static final Color FOREGROUND_TEXT = new Color(242, 242, 247); // iOS Label Color
+    private static final Color ACCENT_COLOR = new Color(0, 122, 255); // iOS System Blue
+
+    private static final Color BUTTON_BASE_COLOR = ACCENT_COLOR;
+    private static final Color BUTTON_HOVER_COLOR = new Color(50, 150, 255);
+    private static final Color BUTTON_PRESSED_COLOR = new Color(0, 92, 204);
+
 
     public EditarClienteFrame(TrabajadorFrame parent, ClienteBanco cliente, CuentaCorriente cuenta) {
         this.parent = parent;
@@ -37,7 +42,7 @@ public class EditarClienteFrame extends JFrame {
         this.dbManager = new DatabaseManager();
 
         setTitle("Editar datos del cliente");
-        setSize(400, 330);
+        setSize(400, 450); // Adjusted for more vertical space in dialog
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         getContentPane().setBackground(DARK_BACKGROUND);
@@ -54,20 +59,30 @@ public class EditarClienteFrame extends JFrame {
     private JTextField createStyledField(String text, boolean editable) {
         JTextField field = new JTextField(text);
         field.setEditable(editable);
-        field.setBackground(FIELD_BACKGROUND);
+        field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        field.setBackground(FIELD_LIGHTER_BACKGROUND);
         field.setForeground(FOREGROUND_TEXT);
-        field.setCaretColor(FOREGROUND_TEXT);
-        field.setBorder(BorderFactory.createLineBorder(FIELD_BACKGROUND.darker()));
+        field.setCaretColor(ACCENT_COLOR);
+        field.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(FIELD_LIGHTER_BACKGROUND.darker(), 1),
+                new EmptyBorder(8, 8, 8, 8)
+        ));
+        field.putClientProperty("JComponent.roundRect", Boolean.TRUE);
         return field;
     }
 
     private JPasswordField createStyledPasswordField(String password, boolean editable) {
         JPasswordField field = new JPasswordField(password);
         field.setEditable(editable);
-        field.setBackground(FIELD_BACKGROUND);
+        field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        field.setBackground(FIELD_LIGHTER_BACKGROUND);
         field.setForeground(FOREGROUND_TEXT);
-        field.setCaretColor(FOREGROUND_TEXT);
-        field.setBorder(BorderFactory.createLineBorder(FIELD_BACKGROUND.darker()));
+        field.setCaretColor(ACCENT_COLOR);
+        field.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(FIELD_LIGHTER_BACKGROUND.darker(), 1),
+                new EmptyBorder(8, 8, 8, 8)
+        ));
+        field.putClientProperty("JComponent.roundRect", Boolean.TRUE);
         return field;
     }
 
@@ -75,13 +90,19 @@ public class EditarClienteFrame extends JFrame {
     private void initComponents() {
         setLayout(new BorderLayout(10,10));
 
+        JPanel principal = new JPanel(new BorderLayout(15,15));
+        principal.setBackground(DARK_BACKGROUND);
+        principal.setBorder(new EmptyBorder(15, 15, 15, 15));
+
+
         JPanel panelCliente = new JPanel(new GridLayout(4, 2, 8, 8));
-        panelCliente.setBackground(DARK_BACKGROUND);
+        panelCliente.setBackground(FIELD_BACKGROUND);
+        panelCliente.putClientProperty("JComponent.roundRect", Boolean.TRUE);
         panelCliente.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(FOREGROUND_TEXT),
+                BorderFactory.createLineBorder(FIELD_BACKGROUND, 1),
                 "Datos Cliente",
                 TitledBorder.LEFT, TitledBorder.TOP,
-                new Font("Arial", Font.BOLD, 14),
+                new Font("Segoe UI", Font.BOLD, 14),
                 FOREGROUND_TEXT
         ));
 
@@ -102,12 +123,13 @@ public class EditarClienteFrame extends JFrame {
         panelCliente.add(fieldPassword);
 
         JPanel panelCuenta = new JPanel(new GridLayout(3, 2, 8,8));
-        panelCuenta.setBackground(DARK_BACKGROUND);
+        panelCuenta.setBackground(FIELD_BACKGROUND);
+        panelCuenta.putClientProperty("JComponent.roundRect", Boolean.TRUE);
         panelCuenta.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(FOREGROUND_TEXT),
+                BorderFactory.createLineBorder(FIELD_BACKGROUND, 1),
                 "Datos Cuenta",
                 TitledBorder.LEFT, TitledBorder.TOP,
-                new Font("Arial", Font.BOLD, 14),
+                new Font("Segoe UI", Font.BOLD, 14),
                 FOREGROUND_TEXT
         ));
 
@@ -125,12 +147,22 @@ public class EditarClienteFrame extends JFrame {
 
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         panelBotones.setBackground(DARK_BACKGROUND);
-        JButton btnGuardar = new JButton("Guardar");
-        JButton btnCancelar = new JButton("Cancelar");
+        JButton btnGuardar = new JButton("💾 Guardar");
+        JButton btnCancelar = new JButton("↩️ Cancelar");
+
+        btnGuardar.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        btnCancelar.setFont(new Font("Segoe UI", Font.BOLD, 15));
+
+        btnGuardar.setBorder(new EmptyBorder(10, 15, 10, 15));
+        btnCancelar.setBorder(new EmptyBorder(10, 15, 10, 15));
+
+        btnGuardar.putClientProperty("JComponent.roundRect", Boolean.TRUE);
+        btnCancelar.putClientProperty("JComponent.roundRect", Boolean.TRUE);
+
 
         applyHoverEffect(btnGuardar, BUTTON_BASE_COLOR, BUTTON_HOVER_COLOR, BUTTON_PRESSED_COLOR);
-        btnGuardar.setForeground(DARK_BACKGROUND);
-        applyHoverEffect(btnCancelar, FIELD_BACKGROUND, FIELD_BACKGROUND.darker(), DARK_BACKGROUND);
+        btnGuardar.setForeground(FOREGROUND_TEXT);
+        applyHoverEffect(btnCancelar, FIELD_LIGHTER_BACKGROUND, FIELD_LIGHTER_BACKGROUND.darker(), DARK_BACKGROUND);
         btnCancelar.setForeground(FOREGROUND_TEXT);
 
         btnGuardar.addActionListener(e -> {
@@ -164,8 +196,7 @@ public class EditarClienteFrame extends JFrame {
         panelBotones.add(btnGuardar);
         panelBotones.add(btnCancelar);
 
-        JPanel principal = new JPanel(new BorderLayout(10,8));
-        principal.setBackground(DARK_BACKGROUND);
+
         principal.add(panelCliente, BorderLayout.NORTH);
         principal.add(panelCuenta, BorderLayout.CENTER);
         principal.add(panelBotones, BorderLayout.SOUTH);

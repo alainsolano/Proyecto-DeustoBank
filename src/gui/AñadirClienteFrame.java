@@ -21,15 +21,16 @@ public class AñadirClienteFrame extends JFrame {
     private JTextField txtApellido;
     private JPasswordField txtContraseña;
 
-    // --- Paleta de Colores del Tema Oscuro ---
-    private static final Color DARK_BACKGROUND = new Color(45, 45, 45);
-    private static final Color FOREGROUND_TEXT = new Color(200, 200, 200);
-    private static final Color FIELD_BACKGROUND = new Color(60, 63, 65);
+    // --- Paleta de Colores del Tema Oscuro (Inspiración iOS Dark Mode) ---
+    private static final Color DARK_BACKGROUND = new Color(28, 28, 30); // iOS System Background
+    private static final Color FIELD_BACKGROUND = new Color(44, 44, 46); // iOS Secondary System Background (Card BG)
+    private static final Color FIELD_LIGHTER_BACKGROUND = new Color(58, 58, 60); // Text Field BG
+    private static final Color FOREGROUND_TEXT = new Color(242, 242, 247); // iOS Label Color
+    private static final Color ACCENT_COLOR = new Color(0, 122, 255); // iOS System Blue
 
-    // --- Paleta de Colores para Botones (Fondo Azul Brillante) ---
-    private static final Color BUTTON_BASE_COLOR = new Color(0x6969FF); // Azul Brillante (Fondo base)
-    private static final Color BUTTON_HOVER_COLOR = new Color(0x7B7BFF); // Azul más claro para HOVER
-    private static final Color BUTTON_PRESSED_COLOR = new Color(0x5050D8); // Azul más oscuro para PRESSED
+    private static final Color BUTTON_BASE_COLOR = ACCENT_COLOR;
+    private static final Color BUTTON_HOVER_COLOR = new Color(50, 150, 255);
+    private static final Color BUTTON_PRESSED_COLOR = new Color(0, 92, 204);
 
     private final DatabaseManager dbManager = new DatabaseManager();
 
@@ -39,33 +40,40 @@ public class AñadirClienteFrame extends JFrame {
         String[] infoSucursal = dbManager.getInfoSucursalTrabajador(username);
         String numSucursal = infoSucursal[2];
 
-        setTitle("🌑 Añadir Nuevo Cliente - Sucursal: " + numSucursal);
+        setTitle("👤 Añadir Nuevo Cliente - Sucursal: " + numSucursal);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(500, 350);
+        setSize(450, 450); // Adjusted size
         setLocationRelativeTo(null);
+        getContentPane().setBackground(DARK_BACKGROUND);
 
         // --- 3. Panel Principal (contentPane) ---
-        contentPane = new JPanel(new BorderLayout(10, 10));
+        contentPane = new JPanel(new BorderLayout(15, 15));
         contentPane.setBorder(new EmptyBorder(15, 15, 15, 15));
         contentPane.setBackground(DARK_BACKGROUND);
         setContentPane(contentPane);
 
         // --- 4. Panel Central: Formulario (GridBagLayout) ---
         JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setBackground(DARK_BACKGROUND);
+        formPanel.setBackground(FIELD_BACKGROUND);
+        formPanel.putClientProperty("JComponent.roundRect", Boolean.TRUE);
+
 
         TitledBorder titledBorder = BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(FOREGROUND_TEXT),
                 "Datos del Nuevo Cliente",
                 TitledBorder.CENTER, TitledBorder.TOP,
-                new Font("Segoe UI", Font.BOLD, 14),
+                new Font("Segoe UI", Font.BOLD, 16),
                 FOREGROUND_TEXT
         );
-        formPanel.setBorder(titledBorder);
+        formPanel.setBorder(BorderFactory.createCompoundBorder(
+                titledBorder,
+                new EmptyBorder(10, 10, 10, 10)
+        ));
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(8, 5, 8, 5);
+        gbc.insets = new Insets(10, 5, 10, 5);
         gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // Inicialización de campos y aplicación de estilo
         txtDNI = createStyledTextField(15);
@@ -74,31 +82,24 @@ public class AñadirClienteFrame extends JFrame {
         txtContraseña = createStyledPasswordField(15);
 
         // ... (Añadir etiquetas y campos al formPanel - no modificado) ...
-        gbc.gridx = 0; gbc.gridy = 0;
+        gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 0.3;
         formPanel.add(createStyledLabel("DNI:"), gbc);
-        gbc.gridx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 1; gbc.weightx = 0.7;
         formPanel.add(txtDNI, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 1;
-        gbc.fill = GridBagConstraints.NONE;
+        gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0.3;
         formPanel.add(createStyledLabel("NOMBRE:"), gbc);
-        gbc.gridx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 1; gbc.weightx = 0.7;
         formPanel.add(txtNombre, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 2;
-        gbc.fill = GridBagConstraints.NONE;
+        gbc.gridx = 0; gbc.gridy = 2; gbc.weightx = 0.3;
         formPanel.add(createStyledLabel("APELLIDO:"), gbc);
-        gbc.gridx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 1; gbc.weightx = 0.7;
         formPanel.add(txtApellido, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 3;
-        gbc.fill = GridBagConstraints.NONE;
+        gbc.gridx = 0; gbc.gridy = 3; gbc.weightx = 0.3;
         formPanel.add(createStyledLabel("CONTRASEÑA:"), gbc);
-        gbc.gridx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 1; gbc.weightx = 0.7;
         formPanel.add(txtContraseña, gbc);
 
         contentPane.add(formPanel, BorderLayout.CENTER);
@@ -107,8 +108,9 @@ public class AñadirClienteFrame extends JFrame {
         JPanel southPanel = new JPanel(new BorderLayout(10, 10));
         southPanel.setBackground(DARK_BACKGROUND);
 
-        JLabel lblSucursal = createStyledLabel("  NUMERO SUCURSAL: " + numSucursal);
-        lblSucursal.setFont(new Font("Segoe UI", Font.ITALIC, 12));
+        JLabel lblSucursal = createStyledLabel("Sucursal: " + numSucursal);
+        lblSucursal.setFont(new Font("Segoe UI", Font.ITALIC, 14));
+        lblSucursal.setForeground(FOREGROUND_TEXT);
         lblSucursal.setBorder(new EmptyBorder(0, 10, 0, 0));
         southPanel.add(lblSucursal, BorderLayout.WEST);
 
@@ -118,13 +120,22 @@ public class AñadirClienteFrame extends JFrame {
         JButton btnAñadir = new JButton("➕ AÑADIR CLIENTE");
         JButton btnVolver = new JButton("↩️ VOLVER");
 
-        // 1. Aplicar el color de texto gris claro a ambos botones
-        btnAñadir.setForeground(FOREGROUND_TEXT);
-        btnVolver.setForeground(FOREGROUND_TEXT);
+        // Aplicar estilo de botones
+        btnAñadir.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        btnVolver.setFont(new Font("Segoe UI", Font.BOLD, 15));
 
-        // 3. Aplicar el efecto hover
+        btnAñadir.setBorder(new EmptyBorder(10, 15, 10, 15));
+        btnVolver.setBorder(new EmptyBorder(10, 15, 10, 15));
+
+        btnAñadir.putClientProperty("JComponent.roundRect", Boolean.TRUE);
+        btnVolver.putClientProperty("JComponent.roundRect", Boolean.TRUE);
+
+
         applyHoverEffect(btnAñadir, BUTTON_BASE_COLOR, BUTTON_HOVER_COLOR, BUTTON_PRESSED_COLOR);
-        applyHoverEffect(btnVolver, BUTTON_BASE_COLOR, BUTTON_HOVER_COLOR, BUTTON_PRESSED_COLOR);
+        btnAñadir.setForeground(FOREGROUND_TEXT);
+
+        applyHoverEffect(btnVolver, FIELD_LIGHTER_BACKGROUND, FIELD_LIGHTER_BACKGROUND.darker(), DARK_BACKGROUND);
+        btnVolver.setForeground(FOREGROUND_TEXT);
 
         buttonPanel.add(btnAñadir);
         buttonPanel.add(btnVolver);
@@ -157,7 +168,7 @@ public class AñadirClienteFrame extends JFrame {
         pack();
     }
 
-    // ... (Métodos applyHoverEffect, createStyledLabel, etc. - no modificado) ...
+    // ... (Métodos applyHoverEffect, createStyledLabel, etc. - modificados para la nueva paleta y estilo) ...
     private void applyHoverEffect(JButton button, Color normalColor, Color hoverColor, Color pressedColor) {
         // Establecer el color de fondo inicial
         button.setBackground(normalColor);
@@ -194,19 +205,29 @@ public class AñadirClienteFrame extends JFrame {
 
     private JTextField createStyledTextField(int columns) {
         JTextField field = new JTextField(columns);
-        field.setBackground(FIELD_BACKGROUND);
+        field.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        field.setBackground(FIELD_LIGHTER_BACKGROUND);
         field.setForeground(FOREGROUND_TEXT);
-        field.setCaretColor(FOREGROUND_TEXT);
-        field.setBorder(BorderFactory.createLineBorder(FIELD_BACKGROUND.darker()));
+        field.setCaretColor(ACCENT_COLOR);
+        field.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(FIELD_LIGHTER_BACKGROUND.darker(), 1),
+                new EmptyBorder(8, 8, 8, 8)
+        ));
+        field.putClientProperty("JComponent.roundRect", Boolean.TRUE);
         return field;
     }
 
     private JPasswordField createStyledPasswordField(int columns) {
         JPasswordField field = new JPasswordField(columns);
-        field.setBackground(FIELD_BACKGROUND);
+        field.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        field.setBackground(FIELD_LIGHTER_BACKGROUND);
         field.setForeground(FOREGROUND_TEXT);
-        field.setCaretColor(FOREGROUND_TEXT);
-        field.setBorder(BorderFactory.createLineBorder(FIELD_BACKGROUND.darker()));
+        field.setCaretColor(ACCENT_COLOR);
+        field.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(FIELD_LIGHTER_BACKGROUND.darker(), 1),
+                new EmptyBorder(8, 8, 8, 8)
+        ));
+        field.putClientProperty("JComponent.roundRect", Boolean.TRUE);
         return field;
     }
 
@@ -252,20 +273,8 @@ public class AñadirClienteFrame extends JFrame {
     // =================================================================
     public static void main(String[] args) {
         // --- Solución para problemas de estilo de botones ---
-        try {
-            // Intenta usar Nimbus, que es un L&F moderno y respeta mejor los colores
-            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-            // Si Nimbus no funciona, puedes probar con Metal o la línea nativa:
-            // UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            // Si el L&F falla, usa el predeterminado de Java (Metal)
-            e.printStackTrace();
-        }
+        // Se elimina la configuración del Look and Feel (L&F) para depender de la clase principal (LoginFrame)
+        // en una aplicación real de escritorio.
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {

@@ -10,10 +10,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.List;
 
 public class ClienteFrame extends JFrame {
@@ -28,15 +25,20 @@ public class ClienteFrame extends JFrame {
     private static final String MOVIMIENTOS = "Card con Movimientos";
     private static final String TRANSFERENCIAS = "Card con Transferencias";
 
-    // --- Paleta de Colores del Tema Oscuro ---
-    private static final Color DARK_BACKGROUND = new Color(45, 45, 45); // Main BG
-    private static final Color FIELD_BACKGROUND = new Color(60, 63, 65); // Lighter Panel BG
-    private static final Color FOREGROUND_TEXT = new Color(200, 200, 200); // Light gray text
-    private static final Color BUTTON_BASE_COLOR = new Color(105, 105, 255); // Primary Button BG (0x6969FF)
-    private static final Color BUTTON_HOVER_COLOR = new Color(123, 123, 255); // Lighter Blue (0x7B7BFF)
-    private static final Color BUTTON_PRESSED_COLOR = new Color(80, 80, 216); // Darker Blue (0x5050D8)
-    private static final Color WIN_COLOR = new Color(46, 139, 87); // Sea Green (Para Ganancia/Saldo)
-    private static final Color LOSS_COLOR = new Color(220, 20, 60); // Crimson (Para Pérdida)
+    // --- Paleta de Colores del Tema Oscuro (Inspiración iOS Dark Mode) ---
+    private static final Color DARK_BACKGROUND = new Color(28, 28, 30); // iOS System Background
+    private static final Color FIELD_BACKGROUND = new Color(44, 44, 46); // iOS Secondary System Background (Card BG)
+    private static final Color FIELD_LIGHTER_BACKGROUND = new Color(58, 58, 60); // Text Field BG
+    private static final Color FOREGROUND_TEXT = new Color(242, 242, 247); // iOS Label Color
+    private static final Color ACCENT_COLOR = new Color(0, 122, 255); // iOS System Blue
+
+    private static final Color BUTTON_BASE_COLOR = ACCENT_COLOR;
+    private static final Color BUTTON_HOVER_COLOR = new Color(50, 150, 255);
+    private static final Color BUTTON_PRESSED_COLOR = new Color(0, 92, 204);
+    private static final Color WIN_COLOR = new Color(48, 209, 88); // iOS System Green
+    private static final Color LOSS_COLOR = new Color(255, 69, 58); // iOS System Red
+
+    private static final int BORDER_RADIUS = 12;
 
     public ClienteFrame(User user) {
         this.user = user;
@@ -57,12 +59,12 @@ public class ClienteFrame extends JFrame {
     }
 
     private void createComponents() {
-        setLayout(new BorderLayout(10, 10));
+        setLayout(new BorderLayout(0, 0)); // Remove vertical gap
         add(createHeaderPanel(), BorderLayout.NORTH);
 
         cardLayout = new CardLayout();
         mainCardPanel = new JPanel(cardLayout);
-        mainCardPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        mainCardPanel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Padding
         mainCardPanel.setBackground(DARK_BACKGROUND);
         mainCardPanel.add(createMovimientosPanel(), MOVIMIENTOS);
         mainCardPanel.add(createTransferenciasPanel(), TRANSFERENCIAS);
@@ -72,35 +74,65 @@ public class ClienteFrame extends JFrame {
     }
 
     private JPanel createHeaderPanel() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 10));
+        // Simular una Navigation Bar de iOS
+        JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(DARK_BACKGROUND);
-        JLabel welcomeLabel = new JLabel("Bienvenido a tu banca, " + user.getName());
-        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        panel.setBorder(new EmptyBorder(20, 15, 10, 15)); // Large padding for modern feel
+
+        JLabel title = new JLabel("Cuentas");
+        title.setFont(new Font("Segoe UI", Font.BOLD, 30));
+        title.setForeground(FOREGROUND_TEXT);
+
+        JLabel welcomeLabel = new JLabel("Bienvenido, " + user.getName());
+        welcomeLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         welcomeLabel.setForeground(FOREGROUND_TEXT);
-        panel.add(welcomeLabel);
+
+        JButton btnLogout = new JButton("🚪"); // Logout icon
+        btnLogout.setFont(new Font("Arial", Font.PLAIN, 20));
+        btnLogout.setBackground(DARK_BACKGROUND);
+        btnLogout.setForeground(ACCENT_COLOR);
+        btnLogout.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+        // Remove default hover effect
+        for (MouseListener ml : btnLogout.getMouseListeners()) {
+            if (ml.getClass().getSimpleName().contains("MouseAdapter")) {
+                btnLogout.removeMouseListener(ml);
+            }
+        }
+
+        btnLogout.addActionListener(e -> logout());
+
+        panel.add(title, BorderLayout.WEST);
+        panel.add(btnLogout, BorderLayout.EAST);
+
         return panel;
     }
 
     private JPanel createMovimientosPanel() {
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.setBackground(DARK_BACKGROUND);
-        JPanel saldoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        saldoPanel.setBackground(FIELD_BACKGROUND);
-        saldoPanel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(FOREGROUND_TEXT),
-                "Saldo Total (todas las cuentas)",
-                TitledBorder.LEFT, TitledBorder.TOP,
-                new Font("Arial", Font.PLAIN, 12),
-                FOREGROUND_TEXT
-        ));
-        saldoLabel = new JLabel("Cargando...");
-        saldoLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        saldoLabel.setForeground(WIN_COLOR);
-        saldoPanel.add(saldoLabel);
-        panel.add(saldoPanel, BorderLayout.NORTH);
 
-        String[] columnNames = {"Fecha", "Cantidad ($)", "Nº Cuenta"};
+        // 1. Saldo Card (Rounded Panel)
+        JPanel saldoCard = new JPanel(new BorderLayout(10, 10));
+        saldoCard.setBackground(FIELD_BACKGROUND);
+        saldoCard.setBorder(new EmptyBorder(20, 15, 20, 15));
+        saldoCard.putClientProperty("JComponent.roundRect", Boolean.TRUE);
+
+        JLabel titleLabel = new JLabel("Saldo Total");
+        titleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        titleLabel.setForeground(FOREGROUND_TEXT.darker());
+
+        saldoLabel = new JLabel("Cargando...");
+        saldoLabel.setFont(new Font("Segoe UI", Font.BOLD, 36));
+        saldoLabel.setForeground(WIN_COLOR);
+
+        saldoCard.add(titleLabel, BorderLayout.NORTH);
+        saldoCard.add(saldoLabel, BorderLayout.CENTER);
+
+        panel.add(saldoCard, BorderLayout.NORTH);
+
+        // 2. Movimientos Table
+        String[] columnNames = {"Fecha", "Cantidad (€)", "Nº Cuenta"};
         movementsTableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) { return false; }
@@ -111,14 +143,21 @@ public class ClienteFrame extends JFrame {
         };
         JTable movementsTable = new JTable(movementsTableModel);
 
-        // Estilo de la tabla
+        // iOS Table Style
         movementsTable.setBackground(FIELD_BACKGROUND);
         movementsTable.setForeground(FOREGROUND_TEXT);
-        movementsTable.getTableHeader().setBackground(DARK_BACKGROUND.darker());
-        movementsTable.getTableHeader().setForeground(FOREGROUND_TEXT);
-        movementsTable.setGridColor(DARK_BACKGROUND.darker());
-        movementsTable.setSelectionBackground(BUTTON_BASE_COLOR.darker());
-        movementsTable.setSelectionForeground(Color.WHITE);
+        movementsTable.setShowGrid(false); // No grid lines
+        movementsTable.setIntercellSpacing(new Dimension(0, 1));
+        movementsTable.setRowHeight(30);
+
+        // Header style (flat)
+        movementsTable.getTableHeader().setBackground(FIELD_BACKGROUND);
+        movementsTable.getTableHeader().setForeground(FOREGROUND_TEXT.darker());
+        movementsTable.getTableHeader().setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        movementsTable.getTableHeader().setBorder(BorderFactory.createEmptyBorder());
+
+        movementsTable.setSelectionBackground(FIELD_LIGHTER_BACKGROUND);
+        movementsTable.setSelectionForeground(FOREGROUND_TEXT);
 
         movementsTable.setRowSorter(new TableRowSorter<>(movementsTableModel));
         JScrollPane scrollPane = new JScrollPane(movementsTable);
@@ -126,93 +165,100 @@ public class ClienteFrame extends JFrame {
         scrollPane.setBackground(DARK_BACKGROUND);
         scrollPane.getViewport().setBackground(FIELD_BACKGROUND);
 
+        // Remove scrollpane border and apply rounded corners to the whole table panel
+        scrollPane.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createEmptyBorder(10, 0, 0, 0),
+                BorderFactory.createLineBorder(FIELD_BACKGROUND, 1) // Base for rounding
+        ));
+        scrollPane.putClientProperty("JComponent.roundRect", Boolean.TRUE);
+
 
         panel.add(scrollPane, BorderLayout.CENTER);
 
         return panel;
     }
 
-    // Helper method for styled text fields
-    private JTextField createStyledTextField(int columns) {
+    // Helper method for iOS-like text fields
+    private JTextField createiOSField(int columns) {
         JTextField field = new JTextField(columns);
-        field.setBackground(FIELD_BACKGROUND);
+        field.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        field.setBackground(FIELD_LIGHTER_BACKGROUND);
         field.setForeground(FOREGROUND_TEXT);
-        field.setCaretColor(FOREGROUND_TEXT);
-        field.setBorder(BorderFactory.createLineBorder(FIELD_BACKGROUND.darker()));
+        field.setCaretColor(ACCENT_COLOR);
+        field.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(FIELD_LIGHTER_BACKGROUND.darker(), 1),
+                new EmptyBorder(10, 10, 10, 10)
+        ));
+        field.putClientProperty("JComponent.roundRect", Boolean.TRUE);
         return field;
     }
 
     // Helper method for styled labels
     private JLabel createStyledLabel(String text) {
         JLabel label = new JLabel(text);
-        label.setForeground(FOREGROUND_TEXT);
+        label.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        label.setForeground(FOREGROUND_TEXT.darker());
         return label;
     }
 
 
     private JPanel createTransferenciasPanel() {
-        JPanel panel = new JPanel(new GridBagLayout());
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.setBackground(DARK_BACKGROUND);
-        panel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(FOREGROUND_TEXT),
-                "Realizar Transferencia",
-                TitledBorder.LEFT, TitledBorder.TOP,
-                new Font("Arial", Font.PLAIN, 12),
-                FOREGROUND_TEXT
-        ));
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        JLabel title = new JLabel("Nueva Transferencia", SwingConstants.CENTER);
+        title.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        title.setForeground(FOREGROUND_TEXT);
+        panel.add(title, BorderLayout.NORTH);
 
-        // Cuenta de destino
-        gbc.gridx = 0; gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.EAST;
-        panel.add(createStyledLabel("Cuenta de destino (IBAN):"), gbc);
+        // Center Panel with Form (Grouped List Style)
+        JPanel formPanel = new JPanel(new GridLayout(3, 1, 0, 1));
+        formPanel.setBackground(FIELD_BACKGROUND);
+        formPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        formPanel.putClientProperty("JComponent.roundRect", Boolean.TRUE);
 
-        gbc.gridx = 1; gbc.gridy = 0;
-        gbc.weightx = 1.0;
-        panel.add(createStyledTextField(20), gbc);
+        // Input fields simulate cells in a grouped list
+        JTextField txtCuentaDestino = createiOSField(20);
+        txtCuentaDestino.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // No border on component
+        txtCuentaDestino.putClientProperty("JComponent.roundRect", Boolean.FALSE); // Ensure no rounding here
 
-        // Cantidad
-        gbc.gridx = 0; gbc.gridy = 1;
-        gbc.weightx = 0;
-        gbc.anchor = GridBagConstraints.EAST;
-        panel.add(createStyledLabel("Cantidad ($):"), gbc);
+        JTextField txtCantidad = createiOSField(20);
+        txtCantidad.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        txtCantidad.putClientProperty("JComponent.roundRect", Boolean.FALSE);
 
-        gbc.gridx = 1; gbc.gridy = 1;
-        gbc.weightx = 1.0;
-        panel.add(createStyledTextField(20), gbc);
+        JTextField txtConcepto = createiOSField(20);
+        txtConcepto.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        txtConcepto.putClientProperty("JComponent.roundRect", Boolean.FALSE);
 
-        // Concepto
-        gbc.gridx = 0; gbc.gridy = 2;
-        gbc.weightx = 0;
-        gbc.anchor = GridBagConstraints.EAST;
-        panel.add(createStyledLabel("Concepto:"), gbc);
+        // Field containers to show iOS-like labels
+        formPanel.add(createTransferRow("Cuenta IBAN:", txtCuentaDestino));
+        formPanel.add(createTransferRow("Cantidad (€):", txtCantidad));
+        formPanel.add(createTransferRow("Concepto:", txtConcepto));
 
-        gbc.gridx = 1; gbc.gridy = 2;
-        gbc.weightx = 1.0;
-        panel.add(createStyledTextField(20), gbc);
+        panel.add(formPanel, BorderLayout.CENTER);
 
-        // Botones
-        JButton btnVolver = new JButton("Volver");
+        // Button Panel
+        JPanel buttonContainer = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 15));
+        buttonContainer.setBackground(DARK_BACKGROUND);
+
         JButton transferButton = new JButton("Realizar Transferencia");
+        transferButton.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        transferButton.setBorder(new EmptyBorder(12, 20, 12, 20));
+        transferButton.putClientProperty("JComponent.roundRect", Boolean.TRUE);
 
         applyHoverEffect(transferButton, BUTTON_BASE_COLOR, BUTTON_HOVER_COLOR, BUTTON_PRESSED_COLOR);
-        transferButton.setForeground(DARK_BACKGROUND);
-        applyHoverEffect(btnVolver, FIELD_BACKGROUND, FIELD_BACKGROUND.darker(), DARK_BACKGROUND);
-        btnVolver.setForeground(FOREGROUND_TEXT);
+        transferButton.setForeground(FOREGROUND_TEXT);
+
+        buttonContainer.add(transferButton);
+        panel.add(buttonContainer, BorderLayout.SOUTH);
 
         transferButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Se asume el orden de los componentes añadidos (Label/Field/Label/Field/...)
-                JTextField txtCuentaDestino = (JTextField) panel.getComponent(1);
-                JTextField txtCantidad = (JTextField) panel.getComponent(3);
-                JTextField txtConcepto = (JTextField) panel.getComponent(5);
                 String cuentaDestino = txtCuentaDestino.getText().trim();
                 String cantidadTxt = txtCantidad.getText().trim();
                 String concepto = txtConcepto.getText().trim();
+
                 if (cuentaDestino.isEmpty() || cantidadTxt.isEmpty()) {
                     JOptionPane.showMessageDialog(panel, "Rellena todos los campos.");
                     return;
@@ -249,69 +295,51 @@ public class ClienteFrame extends JFrame {
                 txtCuentaDestino.setText("");
                 txtCantidad.setText("");
                 txtConcepto.setText("");
-                cardLayout.show(mainCardPanel, MOVIMIENTOS); // Vuelve a la vista de movimientos
-            }
-        });
-
-        btnVolver.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Se asume el orden de los componentes añadidos
-                JTextField txtCuentaDestino = (JTextField) panel.getComponent(1);
-                JTextField txtCantidad = (JTextField) panel.getComponent(3);
-                JTextField txtConcepto = (JTextField) panel.getComponent(5);
-
-                txtCuentaDestino.setText("");
-                txtCantidad.setText("");
-                txtConcepto.setText("");
-
                 cardLayout.show(mainCardPanel, MOVIMIENTOS);
             }
         });
 
-        // Contenedor de botones
-        JPanel buttonContainer = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
-        buttonContainer.setBackground(DARK_BACKGROUND);
-        buttonContainer.add(transferButton);
-
-        // Añadir botones al panel principal
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.EAST;
-        panel.add(buttonContainer, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.gridwidth = 1;
-        gbc.anchor = GridBagConstraints.WEST;
-        panel.add(btnVolver, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        gbc.weighty = 1.0;
-        panel.add(new JLabel(""), gbc);
         return panel;
     }
 
+    // Helper method to simulate an iOS table cell row
+    private JPanel createTransferRow(String labelText, JTextField field) {
+        JPanel row = new JPanel(new BorderLayout(15, 0));
+        row.setBackground(FIELD_LIGHTER_BACKGROUND); // Simulates the field background
+        row.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 1, 0, DARK_BACKGROUND), // Thin separator
+                new EmptyBorder(0, 15, 0, 15) // Horizontal padding
+        ));
+
+        JLabel label = createStyledLabel(labelText);
+        label.setForeground(FOREGROUND_TEXT); // Force bright text color
+        label.setPreferredSize(new Dimension(150, 40));
+
+        row.add(label, BorderLayout.WEST);
+        row.add(field, BorderLayout.CENTER);
+
+        return row;
+    }
+
     private JPanel createFooterPanel() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        panel.setBackground(DARK_BACKGROUND);
-        panel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY));
+        // Simular una Tab Bar de iOS
+        JPanel panel = new JPanel(new GridLayout(1, 3));
+        panel.setBackground(FIELD_BACKGROUND);
+        panel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, DARK_BACKGROUND)
+        ); // Clean separator
 
-        JButton btnInvertir = new JButton("Invertir");
-        JButton btnTransferir = new JButton("Transferir");
-        JButton btnLogout = new JButton("Cerrar Sesión");
+        JButton btnMovimientos = createTabBarButton("📊 Movimientos", ACCENT_COLOR);
+        JButton btnTransferir = createTabBarButton("💸 Transferir", FOREGROUND_TEXT);
+        JButton btnInvertir = createTabBarButton("💰 Invertir", FOREGROUND_TEXT);
 
-        applyHoverEffect(btnInvertir, BUTTON_BASE_COLOR, BUTTON_HOVER_COLOR, BUTTON_PRESSED_COLOR);
-        btnInvertir.setForeground(DARK_BACKGROUND);
-        applyHoverEffect(btnTransferir, BUTTON_BASE_COLOR, BUTTON_HOVER_COLOR, BUTTON_PRESSED_COLOR);
-        btnTransferir.setForeground(DARK_BACKGROUND);
-        applyHoverEffect(btnLogout, FIELD_BACKGROUND, FIELD_BACKGROUND.darker(), DARK_BACKGROUND);
-        btnLogout.setForeground(FOREGROUND_TEXT);
-
-
+        btnMovimientos.addActionListener(e -> {
+            cardLayout.show(mainCardPanel, MOVIMIENTOS);
+            updateTabBarSelection(btnMovimientos, btnTransferir, btnInvertir);
+        });
+        btnTransferir.addActionListener(e -> {
+            cardLayout.show(mainCardPanel, TRANSFERENCIAS);
+            updateTabBarSelection(btnTransferir, btnMovimientos, btnInvertir);
+        });
         btnInvertir.addActionListener(e -> {
             cardLayout.show(mainCardPanel, MOVIMIENTOS);
             String dni = user.getUsername();
@@ -319,15 +347,31 @@ public class ClienteFrame extends JFrame {
             InvertirFrame ventanaInv = new InvertirFrame(ClienteFrame.this, c);
             ventanaInv.setVisible(true);
             ClienteFrame.this.setVisible(false);
+            updateTabBarSelection(btnInvertir, btnMovimientos, btnTransferir);
         });
-        btnTransferir.addActionListener(e -> cardLayout.show(mainCardPanel, TRANSFERENCIAS));
-        btnLogout.addActionListener(e -> logout());
 
-        panel.add(btnInvertir);
+        panel.add(btnMovimientos);
         panel.add(btnTransferir);
-        panel.add(btnLogout);
+        panel.add(btnInvertir);
         return panel;
     }
+
+    private JButton createTabBarButton(String text, Color color) {
+        JButton button = new JButton(text);
+        button.setBackground(FIELD_BACKGROUND);
+        button.setForeground(color);
+        button.setBorder(BorderFactory.createEmptyBorder(15, 0, 15, 0));
+        button.setFocusPainted(false);
+        button.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        return button;
+    }
+
+    private void updateTabBarSelection(JButton selected, JButton unselected1, JButton unselected2) {
+        selected.setForeground(ACCENT_COLOR);
+        unselected1.setForeground(FOREGROUND_TEXT);
+        unselected2.setForeground(FOREGROUND_TEXT);
+    }
+
 
     private void loadMovimientosData() {
         String cuentaPrincipal = dbManager.getCuentaPrincipal(user.getUsername());
@@ -337,7 +381,7 @@ public class ClienteFrame extends JFrame {
         } else {
             saldo = dbManager.getSaldoTotalPorDni(user.getUsername());
         }
-        saldoLabel.setText(String.format("$%,.2f", saldo));
+        saldoLabel.setText(String.format("€%,.2f", saldo));
 
         movementsTableModel.setRowCount(0);
 
@@ -360,7 +404,7 @@ public class ClienteFrame extends JFrame {
         } else {
             saldoReal = dbManager.getSaldoTotalPorDni(user.getUsername());
         }
-        saldoLabel.setText(String.format("$%,.2f", saldoReal));
+        saldoLabel.setText(String.format("€%,.2f", saldoReal));
 
         movementsTableModel.setRowCount(0);
         List<Object[]> movimientos = dbManager.getMovimientos(user.getUsername());
