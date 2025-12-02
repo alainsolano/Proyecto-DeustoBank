@@ -7,11 +7,14 @@ import objetos.User;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 import javax.swing.RowFilter;
 
@@ -30,6 +33,14 @@ public class TrabajadorFrame extends JFrame {
 
     private DatabaseManager dbManager;
     private String[] sucursalInfo;
+
+    // --- Paleta de Colores del Tema Oscuro ---
+    private static final Color DARK_BACKGROUND = new Color(45, 45, 45); // Main BG
+    private static final Color FIELD_BACKGROUND = new Color(60, 63, 65); // Lighter Panel/Field BG
+    private static final Color FOREGROUND_TEXT = new Color(200, 200, 200); // Light gray text
+    private static final Color BUTTON_BASE_COLOR = new Color(105, 105, 255); // Primary Button BG (0x6969FF)
+    private static final Color BUTTON_HOVER_COLOR = new Color(123, 123, 255); // Lighter Blue (0x7B7BFF)
+    private static final Color BUTTON_PRESSED_COLOR = new Color(80, 80, 216); // Darker Blue (0x5050D8)
 
     public objetos.User getUser() {
         return this.user;
@@ -52,12 +63,14 @@ public class TrabajadorFrame extends JFrame {
         setSize(800, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+        getContentPane().setBackground(DARK_BACKGROUND);
     }
 
     private void createComponents() {
         setLayout(new BorderLayout(10, 10));
         JPanel contentPanel = new JPanel(new BorderLayout(10, 10));
         contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        contentPanel.setBackground(DARK_BACKGROUND);
 
         contentPanel.add(createHeaderPanel(), BorderLayout.NORTH);
 
@@ -65,13 +78,22 @@ public class TrabajadorFrame extends JFrame {
         splitPane.setResizeWeight(0.6);
 
         JPanel topPanel = new JPanel(new BorderLayout(5, 5));
+        topPanel.setBackground(DARK_BACKGROUND);
         topPanel.add(createSearchPanel(), BorderLayout.NORTH);
         topPanel.add(createClientTable(), BorderLayout.CENTER);
         splitPane.setTopComponent(topPanel);
 
         JPanel detailPanel = createDetailPanel();
         JScrollPane detailScroll = new JScrollPane(detailPanel);
-        detailScroll.setBorder(BorderFactory.createTitledBorder("Detalles del Cliente Seleccionado"));
+        detailScroll.setBackground(DARK_BACKGROUND);
+        detailScroll.getViewport().setBackground(DARK_BACKGROUND);
+        detailScroll.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(FOREGROUND_TEXT),
+                "Detalles del Cliente Seleccionado",
+                TitledBorder.LEFT, TitledBorder.TOP,
+                new Font("Arial", Font.PLAIN, 12),
+                FOREGROUND_TEXT
+        ));
         splitPane.setBottomComponent(detailScroll);
 
         contentPanel.add(splitPane, BorderLayout.CENTER);
@@ -82,13 +104,16 @@ public class TrabajadorFrame extends JFrame {
 
     private JPanel createHeaderPanel() {
         JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel.setBackground(DARK_BACKGROUND);
         headerPanel.setBorder(new EmptyBorder(0, 0, 10, 0));
 
         JLabel title = new JLabel("Gestión de Clientes");
         title.setFont(new Font("Arial", Font.BOLD, 24));
+        title.setForeground(FOREGROUND_TEXT);
         headerPanel.add(title, BorderLayout.WEST);
 
         JPanel eastHeaderPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        eastHeaderPanel.setBackground(DARK_BACKGROUND);
 
         String welcomeMessage = "Bienvenido, " + user.getName();
         if (sucursalInfo != null) {
@@ -98,8 +123,11 @@ public class TrabajadorFrame extends JFrame {
 
         JLabel welcomeLabel = new JLabel(welcomeMessage);
         welcomeLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        welcomeLabel.setForeground(FOREGROUND_TEXT);
 
         JButton btnLogout = new JButton("Cerrar Sesión");
+        applyHoverEffect(btnLogout, FIELD_BACKGROUND, FIELD_BACKGROUND.darker(), DARK_BACKGROUND);
+        btnLogout.setForeground(FOREGROUND_TEXT);
         btnLogout.addActionListener(e -> logout());
 
         eastHeaderPanel.add(welcomeLabel);
@@ -111,10 +139,16 @@ public class TrabajadorFrame extends JFrame {
 
     private JPanel createSearchPanel() {
         JPanel searchPanel = new JPanel(new BorderLayout(5, 5));
+        searchPanel.setBackground(DARK_BACKGROUND);
         searchPanel.setBorder(new EmptyBorder(0, 0, 5, 0));
-        searchPanel.add(new JLabel("Filtrar clientes: "), BorderLayout.WEST);
+        JLabel filterLabel = new JLabel("Filtrar clientes: ");
+        filterLabel.setForeground(FOREGROUND_TEXT);
+        searchPanel.add(filterLabel, BorderLayout.WEST);
 
         searchField = new JTextField();
+        searchField.setBackground(FIELD_BACKGROUND);
+        searchField.setForeground(FOREGROUND_TEXT);
+        searchField.setCaretColor(FOREGROUND_TEXT);
         searchPanel.add(searchField, BorderLayout.CENTER);
 
         searchField.getDocument().addDocumentListener(new DocumentListener() {
@@ -148,6 +182,16 @@ public class TrabajadorFrame extends JFrame {
         };
 
         clientTable = new JTable(tableModel);
+
+        // Estilo de la tabla
+        clientTable.setBackground(FIELD_BACKGROUND);
+        clientTable.setForeground(FOREGROUND_TEXT);
+        clientTable.getTableHeader().setBackground(DARK_BACKGROUND.darker());
+        clientTable.getTableHeader().setForeground(FOREGROUND_TEXT);
+        clientTable.setGridColor(DARK_BACKGROUND.darker());
+        clientTable.setSelectionBackground(BUTTON_BASE_COLOR.darker());
+        clientTable.setSelectionForeground(Color.WHITE);
+
         sorter = new TableRowSorter<>(tableModel);
         clientTable.setRowSorter(sorter);
 
@@ -164,12 +208,21 @@ public class TrabajadorFrame extends JFrame {
 
         JScrollPane scrollPane = new JScrollPane(clientTable);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.getViewport().setBackground(FIELD_BACKGROUND);
 
         return scrollPane;
     }
 
+    // Helper method for styled labels
+    private JLabel createStyledLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setForeground(FOREGROUND_TEXT);
+        return label;
+    }
+
     private JPanel createDetailPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(DARK_BACKGROUND);
         panel.setBorder(new EmptyBorder(10, 10, 10, 10));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
@@ -188,24 +241,29 @@ public class TrabajadorFrame extends JFrame {
         detailCuenta.setFont(dataFont);
         detailSaldo.setFont(dataFont);
 
+        detailId.setForeground(FOREGROUND_TEXT);
+        detailNombre.setForeground(FOREGROUND_TEXT);
+        detailCuenta.setForeground(FOREGROUND_TEXT);
+        detailSaldo.setForeground(FOREGROUND_TEXT);
+
         // Fila 1
         gbc.gridx = 0; gbc.gridy = 0;
-        panel.add(new JLabel("DNI:"), gbc);
+        panel.add(createStyledLabel("DNI:"), gbc);
         gbc.gridx = 1; panel.add(detailId, gbc);
 
         // Fila 2
         gbc.gridx = 0; gbc.gridy = 1;
-        panel.add(new JLabel("Nombre Completo:"), gbc);
+        panel.add(createStyledLabel("Nombre Completo:"), gbc);
         gbc.gridx = 1; panel.add(detailNombre, gbc);
 
         // Fila 3
         gbc.gridx = 0; gbc.gridy = 2;
-        panel.add(new JLabel("Nº Cuenta:"), gbc);
+        panel.add(createStyledLabel("Nº Cuenta:"), gbc);
         gbc.gridx = 1; panel.add(detailCuenta, gbc);
 
         // Fila 4
         gbc.gridx = 0; gbc.gridy = 3;
-        panel.add(new JLabel("Saldo:"), gbc);
+        panel.add(createStyledLabel("Saldo:"), gbc);
         gbc.gridx = 1; panel.add(detailSaldo, gbc);
 
         return panel;
@@ -233,6 +291,7 @@ public class TrabajadorFrame extends JFrame {
     private JPanel createActionPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBackground(DARK_BACKGROUND);
         panel.setBorder(new EmptyBorder(0, 10, 0, 0));
 
         JButton btnAdd = new JButton("Añadir Cliente");
@@ -243,6 +302,15 @@ public class TrabajadorFrame extends JFrame {
         btnAdd.setMaximumSize(btnSize);
         btnEdit.setMaximumSize(btnSize);
         btnDelete.setMaximumSize(btnSize);
+
+        // Estilo de botones
+        applyHoverEffect(btnAdd, BUTTON_BASE_COLOR, BUTTON_HOVER_COLOR, BUTTON_PRESSED_COLOR);
+        btnAdd.setForeground(DARK_BACKGROUND);
+        applyHoverEffect(btnEdit, BUTTON_BASE_COLOR, BUTTON_HOVER_COLOR, BUTTON_PRESSED_COLOR);
+        btnEdit.setForeground(DARK_BACKGROUND);
+        // Botón de eliminar con un color ligeramente diferente para indicar una acción destructiva
+        applyHoverEffect(btnDelete, BUTTON_BASE_COLOR.darker().darker(), BUTTON_HOVER_COLOR.darker(), BUTTON_PRESSED_COLOR.darker().darker());
+        btnDelete.setForeground(Color.WHITE);
 
         btnAdd.addActionListener(e -> {
             AñadirClienteFrame add = new AñadirClienteFrame(TrabajadorFrame.this);
@@ -338,11 +406,29 @@ public class TrabajadorFrame extends JFrame {
 
     public void actualizarListaClientes() {
         if (tableModel.getRowCount() > 0) {
-            tableModel.setRowCount(0); 
+            tableModel.setRowCount(0);
         }
         List<Object[]> clientesActualizados = dbManager.getClientesConCuenta(user.getUsername());
         for (Object[] clienteData : clientesActualizados) {
             tableModel.addRow(clienteData);
         }
+    }
+
+    // Método auxiliar para el efecto hover de los botones
+    private void applyHoverEffect(JButton button, Color normalColor, Color hoverColor, Color pressedColor) {
+        button.setBackground(normalColor);
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent evt) { button.setBackground(hoverColor); }
+            @Override
+            public void mouseExited(MouseEvent evt) { button.setBackground(normalColor); }
+            @Override
+            public void mousePressed(MouseEvent evt) { button.setBackground(pressedColor); }
+            @Override
+            public void mouseReleased(MouseEvent evt) {
+                if (button.contains(evt.getPoint())) { button.setBackground(hoverColor); }
+                else { button.setBackground(normalColor); }
+            }
+        });
     }
 }
