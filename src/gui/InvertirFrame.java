@@ -22,18 +22,18 @@ public class InvertirFrame extends JFrame {
     private ClienteBanco cliente;
     private DatabaseManager dbManager;
 
-    // --- Paleta de Colores del Tema Oscuro (Inspiración iOS Dark Mode) ---
-    private static final Color DARK_BACKGROUND = new Color(28, 28, 30); // iOS System Background
-    private static final Color FIELD_BACKGROUND = new Color(44, 44, 46); // iOS Secondary System Background (Card BG)
-    private static final Color FIELD_LIGHTER_BACKGROUND = new Color(58, 58, 60); // Text Field BG
-    private static final Color FOREGROUND_TEXT = new Color(242, 242, 247); // iOS Label Color
-    private static final Color ACCENT_COLOR = new Color(0, 122, 255); // iOS System Blue
+    // Paleta de Colores
+    private static final Color DARK_BACKGROUND = new Color(28, 28, 30);
+    private static final Color FIELD_BACKGROUND = new Color(44, 44, 46);
+    private static final Color FIELD_LIGHTER_BACKGROUND = new Color(58, 58, 60);
+    private static final Color FOREGROUND_TEXT = new Color(242, 242, 247);
+    private static final Color ACCENT_COLOR = new Color(0, 122, 255);
 
     private static final Color BUTTON_BASE_COLOR = ACCENT_COLOR;
     private static final Color BUTTON_HOVER_COLOR = new Color(50, 150, 255);
     private static final Color BUTTON_PRESSED_COLOR = new Color(0, 92, 204);
-    private static final Color WIN_COLOR = new Color(48, 209, 88); // iOS System Green
-    private static final Color LOSS_COLOR = new Color(255, 69, 58); // iOS System Red
+    private static final Color WIN_COLOR = new Color(48, 209, 88);
+    private static final Color LOSS_COLOR = new Color(255, 69, 58);
 
     private static final Color COUNTDOWN_BG = FIELD_LIGHTER_BACKGROUND;
 
@@ -44,7 +44,7 @@ public class InvertirFrame extends JFrame {
 
         setTitle("Invertir en DeustoBank");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setBounds(100, 100, 530, 850); // Increased height for mobile feel
+        setBounds(100, 100, 530, 850);
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(20, 20, 20, 20));
         contentPane.setLayout(new GridBagLayout());
@@ -101,13 +101,11 @@ public class InvertirFrame extends JFrame {
         btnInvertir.putClientProperty("JComponent.roundRect", Boolean.TRUE);
 
 
-        // Contador (Large Rounded Box)
-        // SOLUCIÓN 2a: Inicializar vacío y usar el fondo oscuro para ocultar el componente
         lblContador = new JLabel("", SwingConstants.CENTER);
-        lblContador.setFont(new Font("Segoe UI", Font.BOLD, 40)); // Se reduce la fuente para ajustarse a un tamaño más pequeño
+        lblContador.setFont(new Font("Segoe UI", Font.BOLD, 40));
         lblContador.setOpaque(true);
-        lblContador.setBackground(DARK_BACKGROUND); // Fondo inicial invisible
-        // SOLUCIÓN 2b: Reducir el tamaño preferido del contador (70x70) para liberar espacio
+        lblContador.setBackground(DARK_BACKGROUND);
+
         lblContador.setPreferredSize(new Dimension(70, 70));
         lblContador.setHorizontalAlignment(SwingConstants.CENTER);
         lblContador.setBorder(BorderFactory.createEmptyBorder());

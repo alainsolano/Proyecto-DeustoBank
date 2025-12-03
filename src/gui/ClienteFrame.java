@@ -25,18 +25,18 @@ public class ClienteFrame extends JFrame {
     private static final String MOVIMIENTOS = "Card con Movimientos";
     private static final String TRANSFERENCIAS = "Card con Transferencias";
 
-    // --- Paleta de Colores del Tema Oscuro (Inspiración iOS Dark Mode) ---
-    private static final Color DARK_BACKGROUND = new Color(28, 28, 30); // iOS System Background
-    private static final Color FIELD_BACKGROUND = new Color(44, 44, 46); // iOS Secondary System Background (Card BG)
-    private static final Color FIELD_LIGHTER_BACKGROUND = new Color(58, 58, 60); // Text Field BG
-    private static final Color FOREGROUND_TEXT = new Color(242, 242, 247); // iOS Label Color
-    private static final Color ACCENT_COLOR = new Color(0, 122, 255); // iOS System Blue
+    // Paleta de Colores
+    private static final Color DARK_BACKGROUND = new Color(28, 28, 30);
+    private static final Color FIELD_BACKGROUND = new Color(44, 44, 46);
+    private static final Color FIELD_LIGHTER_BACKGROUND = new Color(58, 58, 60);
+    private static final Color FOREGROUND_TEXT = new Color(242, 242, 247);
+    private static final Color ACCENT_COLOR = new Color(0, 122, 255);
 
     private static final Color BUTTON_BASE_COLOR = ACCENT_COLOR;
     private static final Color BUTTON_HOVER_COLOR = new Color(50, 150, 255);
     private static final Color BUTTON_PRESSED_COLOR = new Color(0, 92, 204);
-    private static final Color WIN_COLOR = new Color(48, 209, 88); // iOS System Green
-    private static final Color LOSS_COLOR = new Color(255, 69, 58); // iOS System Red
+    private static final Color WIN_COLOR = new Color(48, 209, 88);
+    private static final Color LOSS_COLOR = new Color(255, 69, 58);
 
     private static final int BORDER_RADIUS = 12;
 
@@ -52,14 +52,14 @@ public class ClienteFrame extends JFrame {
 
     private void setupWindow() {
         setTitle("Deusto Bank - Cliente: " + user.getName());
-        setSize(500, 889); // 9:16 aspect ratio (500x889)
+        setSize(500, 889);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         getContentPane().setBackground(DARK_BACKGROUND);
     }
 
     private void createComponents() {
-        setLayout(new BorderLayout(0, 0)); // Remove vertical gap
+        setLayout(new BorderLayout(0, 0));
         add(createHeaderPanel(), BorderLayout.NORTH);
 
         cardLayout = new CardLayout();

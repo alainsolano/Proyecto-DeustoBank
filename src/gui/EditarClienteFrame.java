@@ -22,13 +22,12 @@ public class EditarClienteFrame extends JFrame {
     private JTextField fieldApellido;
     private JPasswordField fieldPassword;
     private DatabaseManager dbManager;
-
-    // --- Paleta de Colores del Tema Oscuro (Inspiración iOS Dark Mode) ---
-    private static final Color DARK_BACKGROUND = new Color(28, 28, 30); // iOS System Background
-    private static final Color FIELD_BACKGROUND = new Color(44, 44, 46); // iOS Secondary System Background (Card BG)
-    private static final Color FIELD_LIGHTER_BACKGROUND = new Color(58, 58, 60); // Text Field BG
-    private static final Color FOREGROUND_TEXT = new Color(242, 242, 247); // iOS Label Color
-    private static final Color ACCENT_COLOR = new Color(0, 122, 255); // iOS System Blue
+    // Paleta de colores
+    private static final Color DARK_BACKGROUND = new Color(28, 28, 30);
+    private static final Color FIELD_BACKGROUND = new Color(44, 44, 46);
+    private static final Color FIELD_LIGHTER_BACKGROUND = new Color(58, 58, 60);
+    private static final Color FOREGROUND_TEXT = new Color(242, 242, 247);
+    private static final Color ACCENT_COLOR = new Color(0, 122, 255);
 
     private static final Color BUTTON_BASE_COLOR = ACCENT_COLOR;
     private static final Color BUTTON_HOVER_COLOR = new Color(50, 150, 255);
@@ -42,7 +41,7 @@ public class EditarClienteFrame extends JFrame {
         this.dbManager = new DatabaseManager();
 
         setTitle("Editar datos del cliente");
-        setSize(400, 450); // Adjusted for more vertical space in dialog
+        setSize(400, 450);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         getContentPane().setBackground(DARK_BACKGROUND);

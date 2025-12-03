@@ -17,7 +17,7 @@ public class LoginFrame extends JFrame implements ActionListener {
     private JButton btnLogin;
     private JButton btnClear;
 
-    // --- Paleta de Colores del Tema Oscuro (Inspiración iOS Dark Mode) ---
+    // Paleta de Colores
     private static final Color DARK_BACKGROUND = new Color(28, 28, 30); // iOS System Background
     private static final Color FIELD_BACKGROUND = new Color(44, 44, 46); // iOS Secondary System Background (Card BG)
     private static final Color FIELD_LIGHTER_BACKGROUND = new Color(58, 58, 60); // Text Field BG
@@ -51,10 +51,10 @@ public class LoginFrame extends JFrame implements ActionListener {
     private void createComponents() {
 
         JPanel card = new JPanel(new BorderLayout(25, 25));
-        card.setPreferredSize(new Dimension(350, 650)); // Adjusted to fit new window size
+        card.setPreferredSize(new Dimension(350, 650));
         card.setBackground(FIELD_BACKGROUND);
         card.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(FIELD_BACKGROUND, 1), // Invisible line to leverage Nimbus rounding
+                BorderFactory.createLineBorder(FIELD_BACKGROUND, 1),
                 BorderFactory.createEmptyBorder(50, 25, 50, 25)
         ));
 
@@ -148,7 +148,6 @@ public class LoginFrame extends JFrame implements ActionListener {
         buttonPanel.add(btnLogin);
         buttonPanel.add(btnClear);
 
-        // Remove existing MouseListener and add custom hover effect for clear button
         for (MouseListener ml : btnClear.getMouseListeners()) {
             if (ml.getClass().getSimpleName().contains("MouseAdapter")) {
                 btnClear.removeMouseListener(ml);

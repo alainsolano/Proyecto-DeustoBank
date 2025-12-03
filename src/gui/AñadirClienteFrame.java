@@ -271,17 +271,10 @@ public class AñadirClienteFrame extends JFrame {
     // =================================================================
     // === MÉTODO MAIN CORREGIDO PARA FORZAR EL L&F ===
     // =================================================================
-    public static void main(String[] args) {
-        // --- Solución para problemas de estilo de botones ---
-        // Se elimina la configuración del Look and Feel (L&F) para depender de la clase principal (LoginFrame)
-        // en una aplicación real de escritorio.
-
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                // Aquí deberías pasar la instancia de TrabajadorFrame o simularla
-                // Esto es solo para la prueba:
-                // new AñadirClienteFrame(new TrabajadorFrame(...)).setVisible(true);
-            }
-        });
-    }
+    //public static void main(String[] args) {
+    //    SwingUtilities.invokeLater(new Runnable() {
+    //        public void run() {
+    //        }
+    //    });
+    //}
 }

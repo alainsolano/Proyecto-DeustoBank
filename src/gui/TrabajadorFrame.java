@@ -34,13 +34,13 @@ public class TrabajadorFrame extends JFrame {
     private DatabaseManager dbManager;
     private String[] sucursalInfo;
 
-    // --- Paleta de Colores del Tema Oscuro ---
-    private static final Color DARK_BACKGROUND = new Color(45, 45, 45); // Main BG
-    private static final Color FIELD_BACKGROUND = new Color(60, 63, 65); // Lighter Panel/Field BG
-    private static final Color FOREGROUND_TEXT = new Color(200, 200, 200); // Light gray text
-    private static final Color BUTTON_BASE_COLOR = new Color(105, 105, 255); // Primary Button BG (0x6969FF)
-    private static final Color BUTTON_HOVER_COLOR = new Color(123, 123, 255); // Lighter Blue (0x7B7BFF)
-    private static final Color BUTTON_PRESSED_COLOR = new Color(80, 80, 216); // Darker Blue (0x5050D8)
+    // Paleta de Colores
+    private static final Color DARK_BACKGROUND = new Color(45, 45, 45);
+    private static final Color FIELD_BACKGROUND = new Color(60, 63, 65);
+    private static final Color FOREGROUND_TEXT = new Color(200, 200, 200);
+    private static final Color BUTTON_BASE_COLOR = new Color(105, 105, 255);
+    private static final Color BUTTON_HOVER_COLOR = new Color(123, 123, 255);
+    private static final Color BUTTON_PRESSED_COLOR = new Color(80, 80, 216);
 
     public objetos.User getUser() {
         return this.user;
@@ -212,8 +212,7 @@ public class TrabajadorFrame extends JFrame {
 
         return scrollPane;
     }
-
-    // Helper method for styled labels
+    // Estilo para las etiquetas
     private JLabel createStyledLabel(String text) {
         JLabel label = new JLabel(text);
         label.setForeground(FOREGROUND_TEXT);
