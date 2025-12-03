@@ -58,6 +58,31 @@ public class DatabaseManager {
         return null;
     }
 
+    // ⭐ Nuevo método para obtener la información de un cliente como objeto User
+    public User getUserPorDNI(String dni) {
+        String sql = "SELECT dni, nombre, apellido FROM cliente WHERE dni = ?";
+
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, dni);
+
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return new User(
+                        rs.getString("dni"),
+                        null, 
+                        "CLIENTE", // Rol: Cliente
+                        rs.getString("nombre") + " " + rs.getString("apellido")
+                );
+            }
+        } catch (SQLException e) {
+            System.err.println("Error en getUserPorDNI: " + e.getMessage());
+        }
+        return null;
+    }
+
+
     public User authenticateTrabajador(String username, String password) {
         String sql = "SELECT username, nombre, apellido, role "
                    + "FROM trabajador WHERE username = ? AND password = ?";
@@ -171,7 +196,7 @@ public class DatabaseManager {
                 movimientos.add(new Object[]{
                         rs.getString("fecha"),
                         rs.getDouble("cantidad"),
-                        rs.getString("numcuenta") 
+                        rs.getString("numcuenta")  
                 });
             }
 
@@ -213,7 +238,7 @@ public class DatabaseManager {
         PreparedStatement psCuenta = null;
 
         try {
-            conn = connect(); 
+            conn = connect();  
             if (conn == null) return null;
 
             conn.setAutoCommit(false);
@@ -229,20 +254,20 @@ public class DatabaseManager {
             String sqlCuenta = "INSERT INTO cuenta(numcuenta, saldo, dni, numsucursal) VALUES (?, ?, ?, ?)";
             psCuenta = conn.prepareStatement(sqlCuenta);
             psCuenta.setString(1, numCuenta);
-            psCuenta.setDouble(2, 100.0); 
+            psCuenta.setDouble(2, 100.0);  
             psCuenta.setString(3, dni);
             psCuenta.setString(4, numSucursal);
             psCuenta.executeUpdate();
 
-            conn.commit(); 
-            return numCuenta; 
+            conn.commit();  
+            return numCuenta;  
 
         } catch (SQLException e) {
             try {
-                if (conn != null) conn.rollback(); 
+                if (conn != null) conn.rollback();  
             } catch (SQLException ignored) {}
             System.err.println("Error al crear el cliente en BBDD: " + e.getMessage());
-            return null; 
+            return null;  
 
         } finally {
             try {
@@ -306,19 +331,19 @@ public class DatabaseManager {
         PreparedStatement pstmt = null;
 
         try {
-            conn = connect(); 
-            if (conn == null) return false; 
+            conn = connect();  
+            if (conn == null) return false;  
 
             pstmt = conn.prepareStatement(sql);
 
             pstmt.setString(1, cliente.getNombre());
             pstmt.setString(2, cliente.getApellido());
             pstmt.setString(3, cliente.getPassword());
-            pstmt.setString(4, cliente.getDni()); 
+            pstmt.setString(4, cliente.getDni());  
 
             int filasAfectadas = pstmt.executeUpdate();
 
-            return filasAfectadas > 0; 
+            return filasAfectadas > 0;  
             
         } catch (SQLException e) {
             System.err.println("Error SQL al modificar el cliente: " + e.getMessage());
@@ -350,7 +375,7 @@ public class DatabaseManager {
 
     public boolean insertarMovimiento(String numCuenta, double cantidad) {
         String sql = "INSERT INTO movimiento (cantidad, fecha, numcuenta) " +
-                     "VALUES (?, datetime('now'), ?)";
+                      "VALUES (?, datetime('now'), ?)";
 
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -446,6 +471,4 @@ public class DatabaseManager {
             return false;
         }
     }
-
-
 }

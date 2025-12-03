@@ -17,12 +17,11 @@ public class LoginFrame extends JFrame implements ActionListener {
     private JButton btnLogin;
     private JButton btnClear;
 
-    // Paleta de Colores
-    private static final Color DARK_BACKGROUND = new Color(28, 28, 30); // iOS System Background
-    private static final Color FIELD_BACKGROUND = new Color(44, 44, 46); // iOS Secondary System Background (Card BG)
-    private static final Color FIELD_LIGHTER_BACKGROUND = new Color(58, 58, 60); // Text Field BG
-    private static final Color FOREGROUND_TEXT = new Color(242, 242, 247); // iOS Label Color
-    private static final Color ACCENT_COLOR = new Color(0, 122, 255); // iOS System Blue
+    private static final Color DARK_BACKGROUND = new Color(28, 28, 30); 
+    private static final Color FIELD_BACKGROUND = new Color(44, 44, 46); 
+    private static final Color FIELD_LIGHTER_BACKGROUND = new Color(58, 58, 60); 
+    private static final Color FOREGROUND_TEXT = new Color(242, 242, 247); 
+    private static final Color ACCENT_COLOR = new Color(0, 122, 255); 
 
     private static final Color BUTTON_BASE_COLOR = ACCENT_COLOR;
     private static final Color BUTTON_HOVER_COLOR = new Color(50, 150, 255);
@@ -38,7 +37,7 @@ public class LoginFrame extends JFrame implements ActionListener {
 
     private void setupWindow() {
         setTitle("Deusto Bank - Login");
-        setSize(400, 711); // 9:16 aspect ratio (400x711)
+        setSize(400, 711);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
@@ -58,7 +57,7 @@ public class LoginFrame extends JFrame implements ActionListener {
                 BorderFactory.createEmptyBorder(50, 25, 50, 25)
         ));
 
-        // Simular redondeo con Nimbus L&F (si está activo)
+   
         card.putClientProperty("JComponent.roundRect", Boolean.TRUE);
 
 
@@ -245,7 +244,7 @@ public class LoginFrame extends JFrame implements ActionListener {
 
     public static void main(String[] args) {
         try {
-            // Forzar Look and Feel (L&F) Nimbus para una mejor compatibilidad con los colores
+            
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
                     UIManager.setLookAndFeel(info.getClassName());

@@ -416,6 +416,7 @@ public class ClienteFrame extends JFrame {
             movementsTableModel.addRow(row);
         }
     }
+    
 
     // Método auxiliar para el efecto hover de los botones
     private void applyHoverEffect(JButton button, Color normalColor, Color hoverColor, Color pressedColor) {

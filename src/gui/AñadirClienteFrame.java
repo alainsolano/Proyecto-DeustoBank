@@ -21,7 +21,6 @@ public class AñadirClienteFrame extends JFrame {
     private JTextField txtApellido;
     private JPasswordField txtContraseña;
 
-    // --- Paleta de Colores del Tema Oscuro (Inspiración iOS Dark Mode) ---
     private static final Color DARK_BACKGROUND = new Color(28, 28, 30); // iOS System Background
     private static final Color FIELD_BACKGROUND = new Color(44, 44, 46); // iOS Secondary System Background (Card BG)
     private static final Color FIELD_LIGHTER_BACKGROUND = new Color(58, 58, 60); // Text Field BG
@@ -35,7 +34,6 @@ public class AñadirClienteFrame extends JFrame {
     private final DatabaseManager dbManager = new DatabaseManager();
 
     public AñadirClienteFrame(TrabajadorFrame parent) {
-        // ... (Tu lógica de inicialización) ...
         String username = parent.getUser().getUsername();
         String[] infoSucursal = dbManager.getInfoSucursalTrabajador(username);
         String numSucursal = infoSucursal[2];
@@ -46,13 +44,11 @@ public class AñadirClienteFrame extends JFrame {
         setLocationRelativeTo(null);
         getContentPane().setBackground(DARK_BACKGROUND);
 
-        // --- 3. Panel Principal (contentPane) ---
         contentPane = new JPanel(new BorderLayout(15, 15));
         contentPane.setBorder(new EmptyBorder(15, 15, 15, 15));
         contentPane.setBackground(DARK_BACKGROUND);
         setContentPane(contentPane);
 
-        // --- 4. Panel Central: Formulario (GridBagLayout) ---
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setBackground(FIELD_BACKGROUND);
         formPanel.putClientProperty("JComponent.roundRect", Boolean.TRUE);
@@ -75,13 +71,11 @@ public class AñadirClienteFrame extends JFrame {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Inicialización de campos y aplicación de estilo
         txtDNI = createStyledTextField(15);
         txtNombre = createStyledTextField(15);
         txtApellido = createStyledTextField(15);
         txtContraseña = createStyledPasswordField(15);
 
-        // ... (Añadir etiquetas y campos al formPanel - no modificado) ...
         gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 0.3;
         formPanel.add(createStyledLabel("DNI:"), gbc);
         gbc.gridx = 1; gbc.weightx = 0.7;
@@ -104,7 +98,6 @@ public class AñadirClienteFrame extends JFrame {
 
         contentPane.add(formPanel, BorderLayout.CENTER);
 
-        // --- 5. Panel Inferior: Botones y Sucursal ---
         JPanel southPanel = new JPanel(new BorderLayout(10, 10));
         southPanel.setBackground(DARK_BACKGROUND);
 
@@ -120,7 +113,6 @@ public class AñadirClienteFrame extends JFrame {
         JButton btnAñadir = new JButton("➕ AÑADIR CLIENTE");
         JButton btnVolver = new JButton("↩️ VOLVER");
 
-        // Aplicar estilo de botones
         btnAñadir.setFont(new Font("Segoe UI", Font.BOLD, 15));
         btnVolver.setFont(new Font("Segoe UI", Font.BOLD, 15));
 
@@ -144,7 +136,6 @@ public class AñadirClienteFrame extends JFrame {
 
         contentPane.add(southPanel, BorderLayout.SOUTH);
 
-        // ... (Listeners - no modificado) ...
         btnAñadir.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 crearCliente(parent);
@@ -168,9 +159,7 @@ public class AñadirClienteFrame extends JFrame {
         pack();
     }
 
-    // ... (Métodos applyHoverEffect, createStyledLabel, etc. - modificados para la nueva paleta y estilo) ...
     private void applyHoverEffect(JButton button, Color normalColor, Color hoverColor, Color pressedColor) {
-        // Establecer el color de fondo inicial
         button.setBackground(normalColor);
 
         button.addMouseListener(new MouseAdapter() {
@@ -268,13 +257,4 @@ public class AñadirClienteFrame extends JFrame {
             );
         }
     }
-    // =================================================================
-    // === MÉTODO MAIN CORREGIDO PARA FORZAR EL L&F ===
-    // =================================================================
-    //public static void main(String[] args) {
-    //    SwingUtilities.invokeLater(new Runnable() {
-    //        public void run() {
-    //        }
-    //    });
-    //}
 }

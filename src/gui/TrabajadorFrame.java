@@ -183,7 +183,6 @@ public class TrabajadorFrame extends JFrame {
 
         clientTable = new JTable(tableModel);
 
-        // Estilo de la tabla
         clientTable.setBackground(FIELD_BACKGROUND);
         clientTable.setForeground(FOREGROUND_TEXT);
         clientTable.getTableHeader().setBackground(DARK_BACKGROUND.darker());
@@ -212,7 +211,6 @@ public class TrabajadorFrame extends JFrame {
 
         return scrollPane;
     }
-    // Estilo para las etiquetas
     private JLabel createStyledLabel(String text) {
         JLabel label = new JLabel(text);
         label.setForeground(FOREGROUND_TEXT);
@@ -245,22 +243,18 @@ public class TrabajadorFrame extends JFrame {
         detailCuenta.setForeground(FOREGROUND_TEXT);
         detailSaldo.setForeground(FOREGROUND_TEXT);
 
-        // Fila 1
         gbc.gridx = 0; gbc.gridy = 0;
         panel.add(createStyledLabel("DNI:"), gbc);
         gbc.gridx = 1; panel.add(detailId, gbc);
 
-        // Fila 2
         gbc.gridx = 0; gbc.gridy = 1;
         panel.add(createStyledLabel("Nombre Completo:"), gbc);
         gbc.gridx = 1; panel.add(detailNombre, gbc);
 
-        // Fila 3
         gbc.gridx = 0; gbc.gridy = 2;
         panel.add(createStyledLabel("Nº Cuenta:"), gbc);
         gbc.gridx = 1; panel.add(detailCuenta, gbc);
 
-        // Fila 4
         gbc.gridx = 0; gbc.gridy = 3;
         panel.add(createStyledLabel("Saldo:"), gbc);
         gbc.gridx = 1; panel.add(detailSaldo, gbc);
@@ -293,23 +287,47 @@ public class TrabajadorFrame extends JFrame {
         panel.setBackground(DARK_BACKGROUND);
         panel.setBorder(new EmptyBorder(0, 10, 0, 0));
 
+        JButton btnAccess = new JButton("Acceder como Cliente"); // Nuevo botón
         JButton btnAdd = new JButton("Añadir Cliente");
         JButton btnEdit = new JButton("Editar Cliente");
         JButton btnDelete = new JButton("Eliminar Cliente");
 
-        Dimension btnSize = new Dimension(150, 40);
+        Dimension btnSize = new Dimension(170, 40); // Ajustado para el nuevo botón
+        btnAccess.setMaximumSize(btnSize);
         btnAdd.setMaximumSize(btnSize);
         btnEdit.setMaximumSize(btnSize);
         btnDelete.setMaximumSize(btnSize);
 
-        // Estilo de botones
+        applyHoverEffect(btnAccess, BUTTON_BASE_COLOR.brighter(), BUTTON_HOVER_COLOR.brighter(), BUTTON_PRESSED_COLOR.brighter());
+        btnAccess.setForeground(DARK_BACKGROUND);
         applyHoverEffect(btnAdd, BUTTON_BASE_COLOR, BUTTON_HOVER_COLOR, BUTTON_PRESSED_COLOR);
         btnAdd.setForeground(DARK_BACKGROUND);
         applyHoverEffect(btnEdit, BUTTON_BASE_COLOR, BUTTON_HOVER_COLOR, BUTTON_PRESSED_COLOR);
         btnEdit.setForeground(DARK_BACKGROUND);
-        // Botón de eliminar con un color ligeramente diferente para indicar una acción destructiva
         applyHoverEffect(btnDelete, BUTTON_BASE_COLOR.darker().darker(), BUTTON_HOVER_COLOR.darker(), BUTTON_PRESSED_COLOR.darker().darker());
         btnDelete.setForeground(Color.WHITE);
+
+        btnAccess.addActionListener(e -> {
+            int viewRow = clientTable.getSelectedRow();
+            if (viewRow == -1) {
+                JOptionPane.showMessageDialog(this, "Por favor, seleccione un cliente para acceder a su panel.");
+                return;
+            }
+
+            int modelRow = clientTable.convertRowIndexToModel(viewRow);
+            String dni = tableModel.getValueAt(modelRow, 0).toString();
+            String nombre = tableModel.getValueAt(modelRow, 1).toString();
+
+            
+            User clienteUser = dbManager.getUserPorDNI(dni); 
+            if (clienteUser != null) {
+                
+                new ClienteFrame(clienteUser);
+                
+            } else {
+                JOptionPane.showMessageDialog(this, "Error: No se pudo cargar la información de usuario del cliente.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
 
         btnAdd.addActionListener(e -> {
             AñadirClienteFrame add = new AñadirClienteFrame(TrabajadorFrame.this);
@@ -375,7 +393,8 @@ public class TrabajadorFrame extends JFrame {
             }
         });
 
-
+        panel.add(btnAccess); 
+        panel.add(Box.createRigidArea(new Dimension(0, 10)));
         panel.add(btnAdd);
         panel.add(Box.createRigidArea(new Dimension(0, 10)));
         panel.add(btnEdit);
@@ -413,7 +432,6 @@ public class TrabajadorFrame extends JFrame {
         }
     }
 
-    // Método auxiliar para el efecto hover de los botones
     private void applyHoverEffect(JButton button, Color normalColor, Color hoverColor, Color pressedColor) {
         button.setBackground(normalColor);
         button.addMouseListener(new MouseAdapter() {

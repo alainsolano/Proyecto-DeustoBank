@@ -203,7 +203,6 @@ public class EditarClienteFrame extends JFrame {
         add(principal, BorderLayout.CENTER);
     }
 
-    // Método auxiliar para el efecto hover de los botones
     private void applyHoverEffect(JButton button, Color normalColor, Color hoverColor, Color pressedColor) {
         button.setBackground(normalColor);
         button.addMouseListener(new MouseAdapter() {

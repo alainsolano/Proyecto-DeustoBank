@@ -200,7 +200,6 @@ public class InvertirFrame extends JFrame {
 
         new Thread(() -> {
             try {
-                // Habilitar el contador al inicio de la cuenta regresiva
                 lblContador.setForeground(DARK_BACKGROUND);
 
                 for (int i = 5; i >= 1; i--) {
@@ -215,7 +214,6 @@ public class InvertirFrame extends JFrame {
                 }
             } catch (InterruptedException ignored) {}
 
-            // Ocultar el contador al finalizar
             lblContador.setText("");
             lblContador.setBackground(DARK_BACKGROUND);
 
@@ -265,7 +263,6 @@ public class InvertirFrame extends JFrame {
         }).start();
     }
 
-    // Método auxiliar para el efecto hover de los botones
     private void applyHoverEffect(JButton button, Color normalColor, Color hoverColor, Color pressedColor) {
         button.setBackground(normalColor);
         button.addMouseListener(new MouseAdapter() {
