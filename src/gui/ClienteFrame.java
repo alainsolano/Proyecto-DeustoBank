@@ -87,8 +87,12 @@ public class ClienteFrame extends JFrame {
         welcomeLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         welcomeLabel.setForeground(FOREGROUND_TEXT);
 
-        JButton btnLogout = new JButton("🚪"); // Logout icon
-        btnLogout.setFont(new Font("Arial", Font.PLAIN, 20));
+        JButton btnLogout = new JButton("Cerrar sesión");
+        btnLogout.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnLogout.setForeground(ACCENT_COLOR);
+        btnLogout.setBackground(DARK_BACKGROUND);
+        btnLogout.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
         btnLogout.setBackground(DARK_BACKGROUND);
         btnLogout.setForeground(ACCENT_COLOR);
         btnLogout.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -328,9 +332,9 @@ public class ClienteFrame extends JFrame {
         panel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, DARK_BACKGROUND)
         ); // Clean separator
 
-        JButton btnMovimientos = createTabBarButton("📊 Movimientos", ACCENT_COLOR);
-        JButton btnTransferir = createTabBarButton("💸 Transferir", FOREGROUND_TEXT);
-        JButton btnInvertir = createTabBarButton("💰 Invertir", FOREGROUND_TEXT);
+        JButton btnMovimientos = createTabBarButton("Movimientos", ACCENT_COLOR);
+        JButton btnTransferir = createTabBarButton("Transferir", FOREGROUND_TEXT);
+        JButton btnInvertir = createTabBarButton("Invertir", FOREGROUND_TEXT);
 
         btnMovimientos.addActionListener(e -> {
             cardLayout.show(mainCardPanel, MOVIMIENTOS);
