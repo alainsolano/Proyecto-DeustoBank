@@ -1,4 +1,4 @@
-package objetos;
+package domain;
 
 public class CuentaCorriente {
 

@@ -1,6 +1,6 @@
 package datos;
 import database.DatabaseManager;
-import objetos.User;
+import domain.User;
 
 public class LoginService {
 

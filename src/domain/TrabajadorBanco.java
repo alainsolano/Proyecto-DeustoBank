@@ -1,4 +1,4 @@
-package objetos;
+package domain;
 
 public class TrabajadorBanco {
     private String username;

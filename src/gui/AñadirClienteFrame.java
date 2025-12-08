@@ -1,7 +1,7 @@
 package gui;
 
 import database.DatabaseManager;
-import objetos.User;
+import domain.User;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

@@ -1,9 +1,5 @@
 package database;
 
-import objetos.ClienteBanco;
-import objetos.CuentaCorriente;
-import objetos.User;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -12,6 +8,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
+
+import domain.ClienteBanco;
+import domain.CuentaCorriente;
+import domain.User;
 
 public class DatabaseManager {
 

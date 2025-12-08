@@ -1,8 +1,9 @@
 
 package gui;
-import objetos.ClienteBanco;
 import database.DatabaseManager;
-import objetos.User;
+import domain.ClienteBanco;
+import domain.User;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
@@ -94,6 +95,24 @@ public class ClienteFrame extends JFrame {
         ayudaMenu.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         ayudaMenu.putClientProperty("JComponent.roundRect", Boolean.TRUE);
         ayudaMenu.setMaximumSize(new Dimension(140, 28));
+
+       
+        ayudaMenu.addActionListener(e -> {
+            String opcion = (String) ayudaMenu.getSelectedItem();
+            if ("FAQ".equals(opcion)) {
+                JOptionPane.showMessageDialog(
+                        panel,
+                        "Aquí encontrarás respuestas a las preguntas más frecuentes."
+                );
+            } else if ("Contacto".equals(opcion)) {
+                JOptionPane.showMessageDialog(
+                        panel,
+                        "Puedes contactar con el soporte de Deusto Bank desde la sección de contacto."
+                );
+            }
+            ayudaMenu.setSelectedIndex(0);
+        });
+
 
         rightPanel.add(btnLogout);
         rightPanel.add(Box.createVerticalStrut(4));
@@ -189,7 +208,24 @@ public class ClienteFrame extends JFrame {
         JLabel title = new JLabel("Nueva Transferencia", SwingConstants.CENTER);
         title.setFont(new Font("Segoe UI", Font.BOLD, 24));
         title.setForeground(FOREGROUND_TEXT);
-        panel.add(title, BorderLayout.NORTH);
+
+        JButton btnVolver = new JButton("Volver");
+        btnVolver.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        btnVolver.setForeground(FOREGROUND_TEXT);
+        btnVolver.setBackground(FIELD_BACKGROUND);
+        btnVolver.setBorder(new EmptyBorder(8, 15, 8, 15));
+        btnVolver.setFocusPainted(false);
+
+        btnVolver.addActionListener(e -> {
+            cardLayout.show(mainCardPanel, MOVIMIENTOS);
+        });
+
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setBackground(DARK_BACKGROUND);
+        topPanel.add(btnVolver, BorderLayout.WEST);
+        topPanel.add(title, BorderLayout.CENTER);
+
+        panel.add(topPanel, BorderLayout.NORTH);
 
         JPanel formPanel = new JPanel(new GridLayout(3, 1, 0, 1));
         formPanel.setBackground(FIELD_BACKGROUND);
@@ -275,6 +311,7 @@ public class ClienteFrame extends JFrame {
 
         return panel;
     }
+
 
     private JPanel createTransferRow(String labelText, JTextField field) {
         JPanel row = new JPanel(new BorderLayout(15, 0));

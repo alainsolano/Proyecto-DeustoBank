@@ -1,4 +1,4 @@
-package objetos;
+package domain;
 
 import java.util.List;
 

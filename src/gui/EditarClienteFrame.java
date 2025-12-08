@@ -1,12 +1,11 @@
 package gui;
 
-import objetos.ClienteBanco;
-import objetos.CuentaCorriente;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import database.DatabaseManager;
+import domain.ClienteBanco;
+import domain.CuentaCorriente;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;

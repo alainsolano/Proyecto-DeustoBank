@@ -1,12 +1,12 @@
 
 package gui;
-import objetos.ClienteBanco;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Random;
 import javax.swing.border.EmptyBorder;
 import database.DatabaseManager;
+import domain.ClienteBanco;
 
 public class InvertirFrame extends JFrame {
     private static final long serialVersionUID = 1L;

@@ -1,9 +1,9 @@
 package gui;
 
 import database.DatabaseManager;
-import objetos.ClienteBanco;
-import objetos.CuentaCorriente;
-import objetos.User;
+import domain.ClienteBanco;
+import domain.CuentaCorriente;
+import domain.User;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -42,7 +42,7 @@ public class TrabajadorFrame extends JFrame {
     private static final Color BUTTON_HOVER_COLOR = new Color(123, 123, 255);
     private static final Color BUTTON_PRESSED_COLOR = new Color(80, 80, 216);
 
-    public objetos.User getUser() {
+    public domain.User getUser() {
         return this.user;
     }
 
