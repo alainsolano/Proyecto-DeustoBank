@@ -296,20 +296,25 @@ public class ClienteFrame extends JFrame {
         panel.setBackground(FIELD_BACKGROUND);
         panel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, DARK_BACKGROUND));
 
-        JButton btnMovimientos = createTabBarButton("Movimientos", ACCENT_COLOR);
         JButton btnTransferir = createTabBarButton("Transferir", FOREGROUND_TEXT);
+        JButton btnInvertir = createTabBarButton("Invertir", FOREGROUND_TEXT);
 
-        btnMovimientos.addActionListener(e -> {
-            cardLayout.show(mainCardPanel, MOVIMIENTOS);
-            updateTabBarSelection(btnMovimientos, btnTransferir);
-        });
         btnTransferir.addActionListener(e -> {
             cardLayout.show(mainCardPanel, TRANSFERENCIAS);
-            updateTabBarSelection(btnTransferir, btnMovimientos);
+            updateTabBarSelection(btnTransferir, btnInvertir);
+        });
+        btnInvertir.addActionListener(e -> {
+            cardLayout.show(mainCardPanel, MOVIMIENTOS);
+            String dni = user.getUsername();
+            ClienteBanco c = dbManager.getClientePorDNI(dni);
+            InvertirFrame ventanaInv = new InvertirFrame(ClienteFrame.this, c);
+            ventanaInv.setVisible(true);
+            ClienteFrame.this.setVisible(false);
+            updateTabBarSelection(btnInvertir, btnTransferir);
         });
 
-        panel.add(btnMovimientos);
         panel.add(btnTransferir);
+        panel.add(btnInvertir);
         return panel;
     }
 
@@ -380,5 +385,4 @@ public class ClienteFrame extends JFrame {
                 else { button.setBackground(normalColor); }
             }
         });
-    }
-}
+    }}
