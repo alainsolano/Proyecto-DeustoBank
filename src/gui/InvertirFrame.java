@@ -11,6 +11,7 @@ import database.DatabaseManager;
 public class InvertirFrame extends JFrame {
 
     private static final long serialVersionUID = 1L;
+    private JLabel lblImagenResultado;
     private JPanel contentPane;
     private ClienteFrame parent;
 
@@ -22,7 +23,6 @@ public class InvertirFrame extends JFrame {
     private ClienteBanco cliente;
     private DatabaseManager dbManager;
 
-    // Paleta de Colores
     private static final Color DARK_BACKGROUND = new Color(28, 28, 30);
     private static final Color FIELD_BACKGROUND = new Color(44, 44, 46);
     private static final Color FIELD_LIGHTER_BACKGROUND = new Color(58, 58, 60);
@@ -75,7 +75,7 @@ public class InvertirFrame extends JFrame {
         sliderMonto.setMajorTickSpacing(Math.max(1, (int)saldo / 5));
         sliderMonto.setPaintTicks(true);
         sliderMonto.setPaintLabels(true);
-        // SOLUCIÓN 1: Aumentar el espacio vertical del slider (80)
+
         sliderMonto.setPreferredSize(new Dimension(300, 80));
         sliderMonto.putClientProperty("JComponent.roundRect", Boolean.TRUE);
 
@@ -164,8 +164,17 @@ public class InvertirFrame extends JFrame {
         gbc.gridy++;
         contentPane.add(lblResultado, gbc);
 
+        lblImagenResultado = new JLabel("", SwingConstants.CENTER);
+        lblImagenResultado.setPreferredSize(new Dimension(300, 200));
+        lblImagenResultado.setOpaque(false);
+
+        gbc.gridy++;
+        contentPane.add(lblImagenResultado, gbc);
+
         gbc.gridy++; gbc.weighty = 1.0; gbc.anchor = GridBagConstraints.SOUTH;
         contentPane.add(btnVolver, gbc);
+
+
 
         btnInvertir.addActionListener(new ActionListener() {
             @Override
@@ -253,9 +262,11 @@ public class InvertirFrame extends JFrame {
                 if (diferencia >= 0) {
                     lblResultado.setText("¡Has GANADO " + String.format("€%.2f", diferencia) + "!");
                     lblResultado.setForeground(WIN_COLOR);
+                    lblImagenResultado.setIcon(cargarImagen("media/alcista.jpg"));
                 } else {
                     lblResultado.setText("Has PERDIDO " + String.format("€%.2f", -diferencia) + "...");
                     lblResultado.setForeground(LOSS_COLOR);
+                    lblImagenResultado.setIcon(cargarImagen("media/bajista.jpg"));
                 }
                 parent.actualizarSaldoEnPantalla(saldo);
             });
@@ -279,4 +290,10 @@ public class InvertirFrame extends JFrame {
             }
         });
     }
+    private ImageIcon cargarImagen(String ruta) {
+        ImageIcon icon = new ImageIcon(ruta);
+        Image img = icon.getImage().getScaledInstance(250, 150, Image.SCALE_SMOOTH);
+        return new ImageIcon(img);
+    }
+
 }
